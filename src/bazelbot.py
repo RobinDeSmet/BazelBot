@@ -5,6 +5,7 @@ import csv
 import random
 
 from discord.ext import commands
+from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
 from llama_index.llms.ollama import Ollama
@@ -70,6 +71,7 @@ async def on_command_error(ctx, error):
 
 # Core commands
 @bot.command(name="bazel")
+@cooldown(1, 60, BucketType.user)
 async def bazel(ctx):
     # Generate the bazel context
     logger.info("Generating the bazel context")
@@ -116,6 +118,7 @@ async def bazel(ctx):
 
 
 @bot.command(name="update_bazels")
+@cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
     # Retrieve all bazels from the channel
     try:
@@ -140,18 +143,21 @@ async def bazel(ctx):
 
 # Basic commands
 @bot.command(name="klets")
+@cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
     response = "auw! 🤕"
     await ctx.send(response)
 
 
 @bot.command(name="stout")
+@cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
     response = "Sorry papi 😢"
     await ctx.send(response)
 
 
 @bot.command(name="braaf")
+@cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
     response = "*Wiggles LLM-tail* 🙂"
     await ctx.send(response)
