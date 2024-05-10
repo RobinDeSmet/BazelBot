@@ -4,7 +4,6 @@ annotated-types==0.6.0
 anyio==4.3.0
 async-timeout==4.0.3
 attrs==23.2.0
--e git+ssh://git@github.com/RobinDeSmet/BazelBot.git@bf745253955123fda53af0db3a2f6f04ac2efa05#egg=bazelbot
 beautifulsoup4==4.12.3
 certifi==2024.2.2
 charset-normalizer==3.3.2

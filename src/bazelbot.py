@@ -145,6 +145,7 @@ async def bazel(ctx):
 @bot.command(name="klets")
 @cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
+    logger.info("Petsing the bot...")
     response = "auw! 🤕"
     await ctx.send(response)
 
@@ -152,6 +153,7 @@ async def bazel(ctx):
 @bot.command(name="stout")
 @cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
+    logger.info("Telling the bot he has been bad...")
     response = "Sorry papi 😢"
     await ctx.send(response)
 
@@ -159,6 +161,7 @@ async def bazel(ctx):
 @bot.command(name="braaf")
 @cooldown(1, 5, BucketType.user)
 async def bazel(ctx):
+    logger.info("Telling the bot he is a good LLM...")
     response = "*Wiggles LLM-tail* 🙂"
     await ctx.send(response)
 

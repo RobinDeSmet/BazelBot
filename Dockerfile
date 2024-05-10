@@ -44,8 +44,11 @@ USER appuser
 # Copy the source code into the container.
 COPY . .
 
+# Set the .env files
+ENV $(cat .env)
+
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 # Run the application.
-CMD make run
+CMD python src/bazelbot.py

@@ -11,8 +11,34 @@ services:
   server:
     build:
       context: .
+    env_file:
+      - .env
     ports:
       - 8000:8000
+    volumes:
+      - ./src/data:/app/src/data
+#     depends_on:
+#       ollama-pull:
+#           condition: service_completed_successfully
+#   ollama-pull:
+#     image: docker/genai:ollama-pull
+#     env_file:
+#       - src/.env
+#   ollama:
+#       image: ollama/ollama:latest
+#       ports:
+#         - "11434:11434"
+#       volumes:
+#         - ollama_volume:/root/.ollama
+#       deploy:
+#         resources:
+#           reservations:
+#             devices:
+#               - driver: nvidia
+#                 count: all
+#                 capabilities: [gpu]
+# volumes:
+#   ollama_volume:
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
