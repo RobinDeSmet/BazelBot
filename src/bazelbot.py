@@ -17,7 +17,8 @@ BOT_LLM = os.getenv("BOT_LLM")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 SERVER_NAME = os.getenv("SERVER_NAME")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
-OLLAMA_REQUEST_TIMEOUT = os.getenv("OLLAMA_REQUEST_TIMEOUT")
+OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 
 # Set up logging
 discord.utils.setup_logging()
@@ -31,6 +32,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 llm = Ollama(
     model=BOT_LLM,
     request_timeout=float(OLLAMA_REQUEST_TIMEOUT),
+    base_url=OLLAMA_BASE_URL,
 )
 
 
