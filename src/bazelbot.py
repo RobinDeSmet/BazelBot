@@ -1,8 +1,10 @@
+"""Module for the bazelbot"""
+
 import os
-import discord
 import logging
 import csv
 import random
+import discord
 
 from discord.ext import commands
 from discord.ext.commands import cooldown, BucketType
@@ -58,8 +60,8 @@ async def on_ready():
                 writer.writerow([message.content])
 
         logger.info(f"Retrieved {len(messages)} bazels from the server")
-    except Exception as e:
-        logger.error(f"Something went wrong trying to fetch the existing bazels: {e}")
+    except Exception as exc:
+        logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
 
     logger.info("Ready to BAZEL!")
 
@@ -67,6 +69,7 @@ async def on_ready():
 # Error handling
 @bot.event
 async def on_command_error(ctx, error):
+    """Error handling function"""
     if isinstance(error, commands.CommandNotFound):
         await ctx.send(
             "Command not found! Try `!help` for a list of available commands."
@@ -77,6 +80,7 @@ async def on_command_error(ctx, error):
 @bot.command(name="bazel")
 @cooldown(1, 60, BucketType.user)
 async def bazel(ctx):
+    """Generate a bazel"""
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
@@ -85,17 +89,15 @@ async def bazel(ctx):
         bazel_context = ""
 
         with open(BAZELS_FILE_PATH, "r") as csvfile:
-            bazels = csv.reader(csvfile)
-
-            bazels = [line for line in bazels]
+            bazels = list(csv.reader(csvfile))
 
             random_numbers = [random.randint(0, len(bazels)) for _ in range(10)]
 
             for i in random_numbers:
                 bazel_context += f"- {bazels[i][0]}\n"
 
-    except Exception as e:
-        logger.error(f"The bazel context could not be generated: {e}")
+    except Exception as exc:
+        logger.error(f"The bazel context could not be generated: {exc}")
 
     # Format the prompt
     logger.info("Formatting the prompt")
@@ -123,7 +125,8 @@ async def bazel(ctx):
 
 @bot.command(name="update_bazels")
 @cooldown(1, 5, BucketType.user)
-async def bazel(ctx):
+async def update_bazel(ctx):
+    """Update the saved bazels"""
     # Retrieve all bazels from the channel
     try:
         channel = bot.get_channel(CHANNEL_ID)
@@ -140,15 +143,16 @@ async def bazel(ctx):
         logger.info(f"Retrieved {len(messages)} bazels from the server")
 
         await ctx.send(f"Bazels geupdated, there are now {len(messages)} bazels stored")
-    except Exception as e:
-        logger.error(f"Something went wrong trying to fetch the existing bazels: {e}")
-        await ctx.send(f"Updating the bazels failed: {e}")
+    except Exception as exc:
+        logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
+        await ctx.send(f"Updating the bazels failed: {exc}")
 
 
 # Basic commands
 @bot.command(name="klets")
 @cooldown(1, 5, BucketType.user)
-async def bazel(ctx):
+async def klets(ctx):
+    """klets"""
     logger.info("Petsing the bot...")
     response = "auw! 🤕"
     await ctx.send(response)
@@ -156,7 +160,8 @@ async def bazel(ctx):
 
 @bot.command(name="stout")
 @cooldown(1, 5, BucketType.user)
-async def bazel(ctx):
+async def stout(ctx):
+    """stout"""
     logger.info("Telling the bot he has been bad...")
     response = "Sorry papi 😢"
     await ctx.send(response)
@@ -164,7 +169,8 @@ async def bazel(ctx):
 
 @bot.command(name="braaf")
 @cooldown(1, 5, BucketType.user)
-async def bazel(ctx):
+async def braaf(ctx):
+    """braaf"""
     logger.info("Telling the bot he is a good LLM...")
     response = "*Wiggles LLM-tail* 🙂"
     await ctx.send(response)
