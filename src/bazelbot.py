@@ -123,6 +123,64 @@ async def bazel(ctx):
     await ctx.send(answer)
 
 
+@bot.command(name="cumstom_bazel")
+@cooldown(1, 60, BucketType.user)
+async def custom_bazel(ctx, *, user_input):
+    """Generate a bazel based on user input.
+    Usage: !cumstom_bazel <type_your_input_here>
+    """
+    # Check for user input
+    user_context = ""
+    try:
+        if user_input:
+            logger.info(f"User input detected: {user_input}")
+            user_context += f"You have to include this piece of text: {user_input}"
+    except Exception as exc:
+        logger.info(f"Could not parse user input: {exc}")
+
+    # Generate the bazel context
+    logger.info("Generating the bazel context")
+    bazel_context = ""
+
+    try:
+        bazel_context = ""
+
+        with open(BAZELS_FILE_PATH, "r") as csvfile:
+            bazels = list(csv.reader(csvfile))
+
+            random_numbers = random.sample(range(0, len(bazels)), 10)
+
+            for i in random_numbers:
+                bazel_context += f"- {bazels[i][0]}\n"
+
+    except Exception as exc:
+        logger.error(f"The bazel context could not be generated: {exc}")
+
+    # Format the prompt
+    logger.info("Formatting the prompt")
+
+    question = f"""
+            QUESTION: Combine small parts of the context below to generate a sentence but do not make it long (max 20 words).
+            The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
+            FORMAT OF THE ANSWER: ----- <the generated sentence> -----
+            {user_context}
+            CONTEXT
+            {bazel_context}
+            """
+
+    logger.info(question)
+
+    # Generate the answer and format it
+    answer = llm.complete(question)
+
+    answer = str(answer).split("-----")[1].replace('"', " ")
+
+    logger.info(answer)
+
+    # Return the answer to the discord channel
+    await ctx.send(answer)
+
+
 @bot.command(name="update_bazels")
 @cooldown(1, 5, BucketType.user)
 async def update_bazel(ctx):
