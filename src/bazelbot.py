@@ -91,7 +91,7 @@ async def bazel(ctx):
         with open(BAZELS_FILE_PATH, "r") as csvfile:
             bazels = list(csv.reader(csvfile))
 
-            random_numbers = [random.randint(0, len(bazels)) for _ in range(10)]
+            random_numbers = random.sample(range(0, len(bazels)), 10)
 
             for i in random_numbers:
                 bazel_context += f"- {bazels[i][0]}\n"
