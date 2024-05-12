@@ -13,10 +13,11 @@ from llama_index.llms.ollama import Ollama
 # Load in .env variables
 load_dotenv()
 BAZELS_FILE_PATH = os.getenv("BAZELS_FILE_PATH")
-BOT_LLM = os.getenv("BOT_LLM")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-SERVER_NAME = os.getenv("SERVER_NAME")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+LLM = os.getenv("LLM")
+MESSAGE_LIMIT = int(os.getenv("MESSAGE_LIMIT"))
+NUM_THREADS = int(os.getenv("NUM_THREADS"))
 OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 
@@ -30,9 +31,10 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Set up the LLM
 llm = Ollama(
-    model=BOT_LLM,
+    model=LLM,
     request_timeout=float(OLLAMA_REQUEST_TIMEOUT),
     base_url=OLLAMA_BASE_URL,
+    num_threads=NUM_THREADS,
 )
 
 
@@ -46,7 +48,7 @@ async def on_ready():
     try:
         channel = bot.get_channel(CHANNEL_ID)
 
-        messages = [message async for message in channel.history(limit=10000)]
+        messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
         # Write them to a CSV file
         with open(BAZELS_FILE_PATH, "w+", newline="") as csvfile:
@@ -126,7 +128,7 @@ async def bazel(ctx):
     try:
         channel = bot.get_channel(CHANNEL_ID)
 
-        messages = [message async for message in channel.history(limit=10000)]
+        messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
         # Write them to a CSV file
         with open(BAZELS_FILE_PATH, "w+", newline="") as csvfile:
