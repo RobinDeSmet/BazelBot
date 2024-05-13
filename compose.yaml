@@ -14,7 +14,16 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+  migration:
+    build: .
     command: alembic upgrade head
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src/data:/app/src/data
   ollama-pull:
     image: docker/genai:ollama-pull
     env_file:
@@ -39,7 +48,6 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_HOST=localhost
       - POSTGRES_DB=bazelbot_db
       - POSTGRES_PASSWORD=postgres
     ports:

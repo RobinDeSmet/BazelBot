@@ -124,25 +124,17 @@ async def bazel(ctx):
 
 @bot.command(name="cumstom_bazel")
 @cooldown(1, 60, BucketType.user)
-async def custom_bazel(ctx, *, user_input):
+async def custom_bazel(ctx, *, user_context):
     """Generate a bazel based on user input.
     Usage: !cumstom_bazel <type_your_input_here>
     """
-    # Check for user input
-    user_context = ""
-    try:
-        if user_input:
-            logger.info(f"User input detected: {user_input}")
-            user_context += f"You have to include this piece of text: {user_input}"
-    except Exception as exc:
-        logger.info(f"Could not parse user input: {exc}")
-
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
     amount_of_bazels = bazels_repo.count()
 
     try:
+        # TODO: make sure the ID's exist
         random_numbers = random.sample(range(0, amount_of_bazels), 10)
 
         for i in random_numbers:
@@ -155,12 +147,12 @@ async def custom_bazel(ctx, *, user_input):
     logger.info("Formatting the prompt")
 
     question = f"""
-            QUESTION: Combine small parts of the context below to generate a sentence but do not make it long (max 20 words).
+            QUESTION: Combine small parts of the context below to generate a sentence in Dutch but do not make it long (max 20 words).
             The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
             FORMAT OF THE ANSWER: ----- <the generated sentence> -----
-            {user_context}
             CONTEXT
             {bazel_context}
+            try to include this piece of context: {user_context}
             """
 
     logger.info(question)
@@ -205,12 +197,21 @@ async def update_bazel(ctx):
 
 
 # Basic commands
-@bot.command(name="klets")
+@bot.command(name="klets_bots")
 @cooldown(1, 5, BucketType.user)
 async def klets(ctx):
-    """klets"""
+    """klets the bot"""
     logger.info("Petsing the bot...")
     response = "auw! 🤕"
+    await ctx.send(response)
+
+
+@bot.command(name="klets")
+@cooldown(1, 5, BucketType.user)
+async def klets_someone(ctx, name):
+    """klets someone: !klets_someone <name>"""
+    logger.info(f"Petsing {name}...")
+    response = f"Hierzie {name} een klets!"
     await ctx.send(response)
 
 
