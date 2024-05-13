@@ -14,8 +14,6 @@ the bot will take 10 random messages from that file and generate a gibberish sen
     In the developer portal, you can retrieve the bot token
   * Activate developer mode in discord: https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID
     and copy the ID of a text channel of your choice. This channel will be used as the inspiration for the bot.
-* Make sure that the data directory has write permissions for non-root users. You can do this by running: `chmod 777 src/data`. If you have reconfigured
-  where the bot will store the messages, you have to give those permissions to that directory instead.
 * To fascilitate the bot, you will need `Ollama` and have the `gurubot/llama3-guru-uncensored:latest` model installed. This is a specific model that is uncensored, so it is able to generate the NSFW content that we need. The model will be pulled using the `ollama-pull` service in docker compose. The only thing that is needed, is to enable the `NVIDIA Container Toolkit` to be able to use the GPU's power. You can install it by following the steps in this link: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 
 * If you do not have an Nvidia GPU or a GPU installed you can comment out the following lines in the `docker-compose.yaml`.
