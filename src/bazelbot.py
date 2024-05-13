@@ -15,7 +15,6 @@ import bazels_repo
 
 # Load in .env variables
 load_dotenv()
-BAZELS_FILE_PATH = os.getenv("BAZELS_FILE_PATH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 LLM = os.getenv("LLM")
