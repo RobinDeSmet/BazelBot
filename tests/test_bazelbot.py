@@ -1,40 +1,6 @@
-import os
-import csv
-import random
-
 from llama_index.llms.ollama import Ollama
 
-PATH = "src/data/test_bazels.csv"
-
-
-def test_write_bazels():
-    # Set up
-    messages = ["Dit is een bazel", "Dit is dat ook", "Banaan"]
-
-    # Check
-    with open(PATH, "w+", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-
-        for message in messages:
-            writer.writerow([message])
-
-
-def test_read_bazels():
-    # Check
-    with open(PATH, "r") as csvfile:
-        bazels = list(csv.reader(csvfile))
-
-        random_numbers = random.sample(range(0, 3), 3)
-
-        print(random_numbers)
-
-        bazels = [bazels[i][0] for i in random_numbers]
-
-        assert len(bazels) == 3
-        assert "Banaan" in bazels
-
-    # Clean up
-    os.remove(PATH)
+# TODO: Add tests for the bazels
 
 
 def test_ollama_llm():

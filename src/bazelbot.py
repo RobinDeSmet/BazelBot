@@ -2,7 +2,6 @@
 
 import os
 import logging
-import csv
 import random
 import discord
 
@@ -11,6 +10,8 @@ from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
 from llama_index.llms.ollama import Ollama
+
+import bazels_repo
 
 # Load in .env variables
 load_dotenv()
@@ -45,21 +46,24 @@ llm = Ollama(
 async def on_ready():
     """This function will retrieve all the bazels in the channels to fill the database"""
     logger.info(f"{bot.user.name} has connected to Discord!")
+    logger.info("Populating the bazel context database...")
 
-    # Retrieve all bazels from the channel
+    # Retrieve all bazels from the channel and store them in our db
     try:
         channel = bot.get_channel(CHANNEL_ID)
 
         messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
-        # Write them to a CSV file
-        with open(BAZELS_FILE_PATH, "w+", newline="") as csvfile:
-            writer = csv.writer(csvfile)
+        if len(messages) == bazels_repo.count():
+            logger.info("DB already populated with bazels!")
 
+        else:
+            new_bazels = []
             for message in messages:
-                writer.writerow([message.content])
+                new_bazels.append(message.content)
 
-        logger.info(f"Retrieved {len(messages)} bazels from the server")
+            # Add bazels to the database
+            bazels_repo.add_bazels(new_bazels)
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
 
@@ -77,24 +81,20 @@ async def on_command_error(ctx, error):
 
 
 # Core commands
-@bot.command(name="bazel")
+@bot.command(name="test_bazel")
 @cooldown(1, 60, BucketType.user)
 async def bazel(ctx):
     """Generate a bazel"""
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
+    amount_of_bazels = bazels_repo.count()
 
     try:
-        bazel_context = ""
+        random_numbers = random.sample(range(0, amount_of_bazels), 10)
 
-        with open(BAZELS_FILE_PATH, "r") as csvfile:
-            bazels = list(csv.reader(csvfile))
-
-            random_numbers = random.sample(range(0, len(bazels)), 10)
-
-            for i in random_numbers:
-                bazel_context += f"- {bazels[i][0]}\n"
+        for i in random_numbers:
+            bazel_context += f"- {bazels_repo.get(i).content}\n"
 
     except Exception as exc:
         logger.error(f"The bazel context could not be generated: {exc}")
@@ -123,7 +123,7 @@ async def bazel(ctx):
     await ctx.send(answer)
 
 
-@bot.command(name="cumstom_bazel")
+@bot.command(name="test_cumstom_bazel")
 @cooldown(1, 60, BucketType.user)
 async def custom_bazel(ctx, *, user_input):
     """Generate a bazel based on user input.
@@ -141,17 +141,13 @@ async def custom_bazel(ctx, *, user_input):
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
+    amount_of_bazels = bazels_repo.count()
 
     try:
-        bazel_context = ""
+        random_numbers = random.sample(range(0, amount_of_bazels), 10)
 
-        with open(BAZELS_FILE_PATH, "r") as csvfile:
-            bazels = list(csv.reader(csvfile))
-
-            random_numbers = random.sample(range(0, len(bazels)), 10)
-
-            for i in random_numbers:
-                bazel_context += f"- {bazels[i][0]}\n"
+        for i in random_numbers:
+            bazel_context += f"- {bazels_repo.get(i).content}\n"
 
     except Exception as exc:
         logger.error(f"The bazel context could not be generated: {exc}")
@@ -181,26 +177,29 @@ async def custom_bazel(ctx, *, user_input):
     await ctx.send(answer)
 
 
-@bot.command(name="update_bazels")
+@bot.command(name="test_update_bazels")
 @cooldown(1, 5, BucketType.user)
 async def update_bazel(ctx):
     """Update the saved bazels"""
-    # Retrieve all bazels from the channel
+    # Retrieve all bazels from the channel and store them in our db
     try:
         channel = bot.get_channel(CHANNEL_ID)
 
         messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
-        # Write them to a CSV file
-        with open(BAZELS_FILE_PATH, "w+", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-
+        if len(messages) == bazels_repo.count():
+            logger.info("DB already populated with bazels!")
+        else:
+            new_bazels = []
             for message in messages:
-                writer.writerow([message.content])
+                new_bazels.append(message.content)
 
-        logger.info(f"Retrieved {len(messages)} bazels from the server")
+            # Add bazels to the database
+            bazels_repo.add_bazels(new_bazels)
 
-        await ctx.send(f"Bazels geupdated, there are now {len(messages)} bazels stored")
+        await ctx.send(
+            f"Bazels geupdated, there are now {bazels_repo.count()} bazels stored"
+        )
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
         await ctx.send(f"Updating the bazels failed: {exc}")

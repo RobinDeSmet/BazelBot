@@ -10,4 +10,6 @@ test:
 run:
 	poetry shell & poetry run python src/bazelbot.py
 
+reset:
+	docker compose down && docker compose up -d
 
