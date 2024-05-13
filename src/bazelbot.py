@@ -80,7 +80,7 @@ async def on_command_error(ctx, error):
 
 
 # Core commands
-@bot.command(name="test_bazel")
+@bot.command(name="bazel")
 @cooldown(1, 60, BucketType.user)
 async def bazel(ctx):
     """Generate a bazel"""
@@ -122,7 +122,7 @@ async def bazel(ctx):
     await ctx.send(answer)
 
 
-@bot.command(name="test_cumstom_bazel")
+@bot.command(name="cumstom_bazel")
 @cooldown(1, 60, BucketType.user)
 async def custom_bazel(ctx, *, user_input):
     """Generate a bazel based on user input.
@@ -176,7 +176,7 @@ async def custom_bazel(ctx, *, user_input):
     await ctx.send(answer)
 
 
-@bot.command(name="test_update_bazels")
+@bot.command(name="update_bazels")
 @cooldown(1, 5, BucketType.user)
 async def update_bazel(ctx):
     """Update the saved bazels"""

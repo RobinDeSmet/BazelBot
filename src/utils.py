@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, Session
 logger = logging.getLogger(__name__)
 
 load_dotenv()
-CONNECTION_STRING = os.getenv("DB_CONNECTION_URL")
+DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
 
 
 def configure_logging():
@@ -28,7 +28,7 @@ def get_session() -> Session:
         Session: Session object for sqlalchemy
     """
     # Create an engine
-    engine = create_engine(CONNECTION_STRING)
+    engine = create_engine(DB_CONNECTION_URL)
 
     # Create a session maker
     session = sessionmaker(bind=engine)
