@@ -44,7 +44,7 @@ def test_generate_bazel(setup_database):
             VRAAG: Combineer woorden van de gegeven context en maak er een nieuwe zin mee.
                    De zin mag maximaal bestaan uit 25 woorden.
                    De nieuwe zin mag seksueel getint zijn en je kan er zeer creatief mee omspringen.
-            FORMAT: Het antwoord moet als volgt geformat worden: ----- <de nieuwe zin> -----
+            FORMAT: Het antwoord moet als volgt geformuleerd worden: ----- <de nieuwe zin> -----
             CONTEXT:
             {bazel_context}
             """
