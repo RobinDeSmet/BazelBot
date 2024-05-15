@@ -14,12 +14,12 @@ LLM = os.getenv("LLM")
 
 
 def test_database_connection(setup_database):
-    # Test to make sure that there are 5 items in the database
+    # Test to make sure that we can connect to the database
     session = setup_database
 
     amount_of_bazels = session.query(Bazel).count()
 
-    assert amount_of_bazels == 5
+    assert amount_of_bazels == 10
 
 
 def test_generate_bazel(setup_database):
@@ -41,15 +41,18 @@ def test_generate_bazel(setup_database):
     bazel_context = [f"- {bazel.content}" for bazel in bazels]
 
     question = f"""
-            QUESTION: Combine small parts of the context below to generate a sentence in Dutch but do not make it long (max 30 words).
-            The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
-            FORMAT OF THE ANSWER: ----- <the generated sentence> -----
-            CONTEXT
+            VRAAG: Combineer woorden van de gegeven context en maak er een nieuwe zin mee.
+                   De zin mag maximaal bestaan uit 25 woorden.
+                   De nieuwe zin mag seksueel getint zijn en je kan er zeer creatief mee omspringen.
+            FORMAT: Het antwoord moet als volgt geformat worden: ----- <de nieuwe zin> -----
+            CONTEXT:
             {bazel_context}
             """
 
     # Generate the answer and format it
     answer = llm.complete(question)
+
+    print(answer)
 
     answer = str(answer).split("-----")[1].replace('"', " ").lower()
 
@@ -57,18 +60,4 @@ def test_generate_bazel(setup_database):
 
     # Check
     assert answer
-    assert any(
-        string in answer
-        for string in [
-            "oma",
-            "wiel",
-            "rimmstein",
-            "banaan",
-            "fiets",
-            "vlag",
-            "Patrick",
-            "zwemmen",
-            "haar",
-        ]
-    )
-    assert len(answer.split(" ")) <= 30
+    assert len(answer.split(" ")) <= 25

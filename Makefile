@@ -5,7 +5,7 @@ pylint:
 	pylint --rcfile=".pylintrc" src
 
 test:
-	pytest -vv
+	pytest -vv -s
 
 run:
 	poetry shell & poetry run python src/bazelbot.py

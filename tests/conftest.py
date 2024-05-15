@@ -31,11 +31,16 @@ def setup_database():
 
     # Populate test database
     bazels = [
-        "Ik ben een banaan",
-        "Als mijn oma wielen had was ze een fiets",
-        "Rimmstein",
-        "Mijn haar is in de waar",
+        "Misschien betekent die zak frieten dat ik een teelbal teveel heb",
+        "Ne meter bierplank",
+        "Zijn tepels ken ik blind!",
+        "Ik ben kapitein en ik bel vanop de scheve schajuit",
         "Rooi vlag of niet, Patrick ga zwemmen!",
+        "Zijn spaghetti begon uit zijn broek te vallen en hij was aan het panikeren",
+        "Mensen die naar een dure schoenenwinkel gingen hadden meer kans om op de space titanic te zitten",
+        "Zijn luchtbiertechniek is geweldig",
+        "Piemelini",
+        "Die koe is verkouden, hij heeft koerona",
     ]
 
     for bazel in bazels:
