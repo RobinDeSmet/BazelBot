@@ -87,13 +87,17 @@ async def bazel(ctx):
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
-    amount_of_bazels = bazels_repo.count()
 
     try:
-        random_numbers = random.sample(range(0, amount_of_bazels), 10)
+        # Get bazels
+        bazels = bazels_repo.list_bazels()
 
+        # Sample 10 random bazels
+        random_numbers = random.sample(range(0, len(bazels)), 10)
+
+        # Generate bazel context
         for i in random_numbers:
-            bazel_context += f"- {bazels_repo.get(i).content}\n"
+            bazel_context += f"- {bazels[i].content}\n"
 
     except Exception as exc:
         logger.error(f"The bazel context could not be generated: {exc}")
@@ -131,14 +135,17 @@ async def custom_bazel(ctx, *, user_context):
     # Generate the bazel context
     logger.info("Generating the bazel context")
     bazel_context = ""
-    amount_of_bazels = bazels_repo.count()
 
     try:
-        # TODO: make sure the ID's exist
-        random_numbers = random.sample(range(0, amount_of_bazels), 10)
+        # Get bazels
+        bazels = bazels_repo.list_bazels()
 
+        # Sample 10 random bazels
+        random_numbers = random.sample(range(0, len(bazels)), 10)
+
+        # Generate bazel context
         for i in random_numbers:
-            bazel_context += f"- {bazels_repo.get(i).content}\n"
+            bazel_context += f"- {bazels[i].content}\n"
 
     except Exception as exc:
         logger.error(f"The bazel context could not be generated: {exc}")

@@ -4,9 +4,10 @@ import logging
 import hashlib
 
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
-from utils import get_session
-from models import Bazel
+from src.utils import get_session
+from src.models import Bazel
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ def get(bazel_id: int) -> Bazel:
         session.close()
 
 
-def list_bazels() -> list[Bazel]:
+def list_bazels(session: Session) -> list[Bazel]:
     """Get all the bazels
 
     Returns:
@@ -92,9 +93,6 @@ def list_bazels() -> list[Bazel]:
     """
     logger.info("Retrieving all bazels...")
     try:
-        # Retrieve session
-        session = get_session()
-
         # Add bazel object
         bazels = session.query(Bazel).all()
 
@@ -103,6 +101,7 @@ def list_bazels() -> list[Bazel]:
         return bazels
     except Exception as exc:
         logger.info(f"Bazels could not be retrieved: {exc}")
+        return None
     finally:
         # Close the session
         session.close()
