@@ -1,10 +1,12 @@
 import os
+from discord import Message
 import pytest
 
 from dotenv import load_dotenv
 from llama_index.llms.ollama import Ollama
 from src.models import Bazel
-from src import bazels_controller
+from src import bazels_controller, bazels_repo
+from src.types import BazelType
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
@@ -12,6 +14,13 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 NUM_THREADS = int(os.getenv("NUM_THREADS"))
 OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
 LLM = os.getenv("LLM")
+
+# Set up the LLM
+llm = Ollama(
+    model=LLM,
+    request_timeout=OLLAMA_REQUEST_TIMEOUT,
+    base_url=OLLAMA_BASE_URL,
+)
 
 
 def test_database_connection(setup_database):
@@ -54,39 +63,74 @@ def test_generate_bazel_context(setup_database):
 
     assert context
 
+    # Test bazelcontext with nr_bazels > bazels in db
+    context = bazels_controller.generate_bazel_context(nr_bazels=20, session=session)
 
-# def test_generate_bazel(setup_database):
-#     # Get test session
-#     session = setup_database
+    print(f"\n{context}")
 
-#     # Set up the LLM
-#     llm = Ollama(
-#         model=LLM,
-#         request_timeout=OLLAMA_REQUEST_TIMEOUT,
-#         base_url=OLLAMA_BASE_URL,
-#     )
+    assert context
 
-#     # Get bazel context
-#     bazel_context = bazels_controller.generate_bazel_context(session=session)
 
-#     question = f"""
-#             VRAAG: Combineer woorden van de gegeven context en maak er een nieuwe zin mee.
-#                    De zin mag maximaal bestaan uit 25 woorden.
-#                    De nieuwe zin mag seksueel getint zijn en je kan er zeer creatief mee omspringen.
-#             FORMAT: Het antwoord moet als volgt geformuleerd worden: ----- <de nieuwe zin> -----
-#             CONTEXT:
-#             {bazel_context}
-#             """
+def test_bazel_crud_works(setup_database):
+    # Get test session
+    session = setup_database
 
-#     # Generate the answer
-#     answer = llm.complete(question)
+    bazel_content = "New bazel that has to be added!!"
 
-#     print(answer)
+    # Add bazel
+    result = bazels_repo.add(bazel_content, session)
 
-#     answer = str(answer).split("-----")[1].replace('"', " ").lower()
+    assert result == 1
 
-#     print(answer)
+    # Add duplicate bazel
+    result = bazels_repo.add(bazel_content, session)
 
-#     # Check
-#     assert answer
-#     assert len(answer.split(" ")) <= 25
+    assert result == 0
+
+    # Retrieve bazel
+    bazel = bazels_repo.get(bazel_content, session)
+
+    assert bazel.content_hash == bazels_repo.generate_content_hash(bazel_content)
+
+    # List bazels
+    bazels = bazels_repo.list(session)
+
+    assert len(bazels) == 11
+
+    # Cleanup
+    bazels_repo.delete(bazel_content, session)
+
+    # Check if bazel is successfully deleted
+    assert bazels_repo.count(session) == 10
+
+
+def test_generate_normal_bazel(setup_database):
+    # Get test session
+    session = setup_database
+
+    # Generate normal bazel
+    bazel = bazels_controller.generate_bazel(session=session)
+    print(bazel)
+
+    # Check
+    assert bazel
+    assert len(bazel.split(" ")) <= 50  # Bazel should not be too long
+
+
+def test_generate_custom_bazel(setup_database):
+    # Get test session
+    session = setup_database
+
+    # Generate custom bazel
+    user_context = "Apennootje"
+    custom_bazel = bazels_controller.generate_bazel(
+        user_context=user_context, bazel_type=BazelType.CUSTOM, session=session
+    )
+    print(custom_bazel)
+
+    # Check
+    assert custom_bazel
+    assert len(custom_bazel.split(" ")) <= 50  # Bazel should not be too long
+    assert (
+        user_context in custom_bazel
+    )  # Make sure that the user context is present in the custom bazel
