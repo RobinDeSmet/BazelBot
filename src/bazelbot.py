@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from llama_index.llms.ollama import Ollama
 
 from src import bazels_repo, bazels_controller
-from src.types import BazelType
+from src.custom_types import BazelType
 from src.utils import configure_logging
 
 # Load in .env variables
@@ -79,10 +79,10 @@ async def bazel(ctx):
     """Generate a bazel"""
     # Generate the bazel
     try:
-        bazel = bazels_controller.generate_bazel()
+        new_bazel = bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
-        await ctx.send(bazel)
+        await ctx.send(new_bazel)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the bazel: {exc}")
@@ -92,15 +92,15 @@ async def bazel(ctx):
 @bot.command(name="cumstom_bazel")
 @cooldown(1, 60, BucketType.user)
 async def custom_bazel(ctx, *, user_context):
-    """Generate a bazel based on user input. Usage: !cumstom_bazel <type_your_input_here>"""
+    """Usage: !cumstom_bazel <type_your_input_here>"""
     # Generate custom bazel
     try:
-        custom_bazel = bazels_controller.generate_bazel(
+        new_custom_bazel = bazels_controller.generate_bazel(
             user_context=user_context, bazel_type=BazelType.CUSTOM
         )
 
         # Return the answer to the discord channel
-        await ctx.send(custom_bazel)
+        await ctx.send(new_custom_bazel)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")

@@ -44,16 +44,15 @@ def add(bazel_content: str, session: Session) -> int:
 
         # Check if bazel already exists
         if exists(content_hash, session=session):
-            logger.info(f"Bazel is already present in db!")
+            logger.info("Bazel is already present in db!")
             return 0
-        else:
-            # Create bazel object
-            new_bazel = Bazel(content=bazel_content, content_hash=content_hash)
-            session.add(new_bazel)
-            session.commit()
+        # Create bazel object
+        new_bazel = Bazel(content=bazel_content, content_hash=content_hash)
+        session.add(new_bazel)
+        session.commit()
 
-            logger.info(f"Bazel added to db")
-            return 1
+        logger.info("Bazel added to db")
+        return 1
     except Exception as exc:
         logger.error(f"Bazel could not be added to the db: {exc}")
         raise exc
@@ -120,7 +119,7 @@ def delete(bazel_content: str, session: Session):
         logger.info(f"Bazel could not be deleted: {exc}")
 
 
-def count(session: Session) -> int:
+def count(session: Session = get_session()) -> int:
     """Count the amount of bazels in the db
 
     Args:
@@ -140,9 +139,6 @@ def count(session: Session) -> int:
     except Exception as exc:
         logger.info(f"Bazels could not be counted: {exc}")
         raise exc
-    finally:
-        # Close the session
-        session.close()
 
 
 def exists(bazel_content_hash: str, session: Session) -> bool:

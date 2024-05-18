@@ -1,3 +1,5 @@
+"""Controller module for bazels"""
+
 import logging
 import random
 import os
@@ -9,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from src import bazels_repo
 from src.utils import get_session
-from src.types import BazelType
+from src.custom_types import BazelType
 
 
 logger = logging.getLogger(__name__)
@@ -48,22 +50,21 @@ def populate_database(messages: list[Message], session: Session = get_session())
     added_bazels = 0
 
     # Check if db needs to be populated
-    if bazels_repo.count() == len(messages):
+    if bazels_repo.count(session) == len(messages):
         logger.info("Database already populated")
         return added_bazels
-    else:
-        # Add the bazels
-        for message in messages:
-            try:
-                result = bazels_repo.add(message.content, session)
+    # Add the bazels
+    for message in messages:
+        try:
+            result = bazels_repo.add(message.content, session)
 
-                if result == 1:
-                    added_bazels += 1
-            except Exception as exc:
-                logger.error(f"Bazel could not be added: {exc}")
+            if result == 1:
+                added_bazels += 1
+        except Exception as exc:
+            logger.error(f"Bazel could not be added: {exc}")
 
-        logger.info(f"Added {added_bazels} new bazels")
-        return added_bazels
+    logger.info(f"Added {added_bazels} new bazels")
+    return added_bazels
 
 
 def generate_bazel(
@@ -128,8 +129,7 @@ def generate_bazel_context(
         bazels = bazels_repo.list(session=session)
 
         # Sample 'nr_bazels' (default 10) random bazels
-        if len(bazels) < nr_bazels:
-            nr_bazels = len(bazels)
+        nr_bazels = min(nr_bazels, 10)
         random_numbers = random.sample(range(0, len(bazels)), nr_bazels)
 
         # Generate bazel context
