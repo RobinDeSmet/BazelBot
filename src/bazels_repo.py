@@ -12,81 +12,58 @@ from src.models import Bazel
 logger = logging.getLogger(__name__)
 
 
-def add(bazel_content: str):
+# CRUD ( We only need add, get and list basically since we will never delete a bazel!)
+def generate_content_hash(content: str) -> str:
+    """Generate the content hash for a bazel
+
+    Args:
+        content (str): Content to be hashed
+
+    Returns:
+        str: The hashed content
+    """
+    # Generate content hash
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def add(bazel_content: str, session: Session) -> int:
     """Add a bazel to the db
 
     Args:
         bazel_content (str): The content that we want to add
-    """
-    logger.info(f"Adding bazel: {bazel_content}...")
-    try:
-        # Retrieve session
-        session = get_session()
-
-        # Generate content hash
-        content_hash = hashlib.sha256(bazel_content.encode("utf-8")).hexdigest()
-
-        # Create bazel object
-        bazel = Bazel(content=bazel_content, content_hash=content_hash)
-
-        # Add bazel object
-        session.add(bazel)
-        session.commit()
-
-        logger.info("Bazel successfully added!")
-    except Exception as exc:
-        if exc.__class__.__name__ == "IntegrityError":
-            logger.info("Bazel already present in the database!")
-        else:
-            logger.info(f"Bazel could not be added: {exc}")
-    finally:
-        # Close the session
-        session.close()
-
-
-def add_bazels(bazels: list[str]):
-    """Add multiple bazels to the db
-
-    Args:
-        bazels (list[str]): List of new content for the bazels
-    """
-    logger.info(f"Adding {len(bazels)} bazels...")
-
-    for bazel in bazels:
-        add(bazel)
-
-    logger.info(f"{len(bazels)} Bazels successfully added!")
-
-
-def get(bazel_id: int) -> Bazel:
-    """Retrieve a bazel based on its id
-
-    Args:
-        bazel_id (int): the id of the basel
+        session (Session): The session
 
     Returns:
-        Bazel: Bazel object
+        int: 0=Already exists, 1=Added
     """
-    logger.info(f"Retrieving bazel with ID: {bazel_id}...")
+    logger.info(f"Adding bazel: {bazel_content}...")
+
     try:
-        # Retrieve session
-        session = get_session()
+        # Generate content hash
+        content_hash = generate_content_hash(bazel_content)
 
-        # Get bazel object
-        bazel = session.query(Bazel).filter_by(id=bazel_id).first()
+        # Check if bazel already exists
+        if exists(content_hash, session=session):
+            logger.info(f"Bazel is already present in db!")
+            return 0
+        else:
+            # Create bazel object
+            new_bazel = Bazel(content=bazel_content, content_hash=content_hash)
+            session.add(new_bazel)
+            session.commit()
 
-        logger.info("Bazel successfully retrieved!")
-
-        return bazel
+            logger.info(f"Bazel added to db")
+            return 1
     except Exception as exc:
-        logger.info(f"Bazel could not be retrieved: {exc}")
-    finally:
-        # Close the session
-        session.close()
+        logger.error(f"Bazel could not be added to the db: {exc}")
+        raise exc
 
 
-def list_bazels(session: Session) -> list[Bazel]:
+def list(session: Session) -> list[Bazel]:
     """Get all the bazels
+
+    Args:
+        session (Session): The session
 
     Returns:
         list[Bazel]: List of bazels
@@ -101,23 +78,59 @@ def list_bazels(session: Session) -> list[Bazel]:
         return bazels
     except Exception as exc:
         logger.info(f"Bazels could not be retrieved: {exc}")
-        return None
-    finally:
-        # Close the session
-        session.close()
+        raise exc
 
 
-def count() -> int:
+def get(bazel_content: str, session: Session) -> Bazel:
+    """Get a bazel
+
+    Args:
+        bazel_content (str): The content of the bazel
+        session (Session): The session
+    """
+    logger.info(f"Retrieving bazel: {bazel_content}...")
+    try:
+        # Retrieve bazel object
+        bazel = (
+            session.query(Bazel).filter(Bazel.content == bazel_content).one_or_none()
+        )
+
+        logger.info(f"Bazel with ID: { bazel.id } successfully retrieved!")
+
+        return bazel
+    except Exception as exc:
+        logger.info(f"Bazel could not be retrieved: {exc}")
+        raise exc
+
+
+def delete(bazel_content: str, session: Session):
+    """Delete a bazel
+
+    Args:
+        bazel_content (str): The content of the bazel
+        session (Session): The session
+    """
+    logger.info(f"Deleting bazel: {bazel_content}...")
+    try:
+        # Add bazel object
+        bazels = session.query(Bazel).filter(Bazel.content == bazel_content).delete()
+
+        logger.info(f"{len(bazels)} Bazel successfully deleted!")
+    except Exception as exc:
+        logger.info(f"Bazel could not be deleted: {exc}")
+
+
+def count(session: Session) -> int:
     """Count the amount of bazels in the db
+
+    Args:
+        session (Session): The session
 
     Returns:
         int: The amount of bazels in the db
     """
     logger.info("Counting all bazels...")
     try:
-        # Retrieve session
-        session = get_session()
-
         # Add bazel object
         bazel_count = session.query(func.count(Bazel.id)).scalar()
 
@@ -126,6 +139,23 @@ def count() -> int:
         return bazel_count
     except Exception as exc:
         logger.info(f"Bazels could not be counted: {exc}")
+        raise exc
     finally:
         # Close the session
         session.close()
+
+
+def exists(bazel_content_hash: str, session: Session) -> bool:
+    """Check if the bazel exists based on its hash
+
+    Args:
+        bazel_content_hash (str): Content hash
+        session (Session): The session
+
+    Returns:
+        bool: True if exists, False if not
+    """
+    return (
+        session.query(Bazel).filter_by(content_hash=bazel_content_hash).first()
+        is not None
+    )
