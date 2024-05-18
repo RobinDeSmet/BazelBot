@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 
 from llama_index.llms.ollama import Ollama
 
-from src import bazels_repo, bazels_controller
+from src import bazels_controller
+from src import bazels_repo
 from src.custom_types import BazelType
 from src.utils import configure_logging
 
