@@ -2,7 +2,6 @@
 
 import os
 import logging
-import random
 import discord
 
 from discord.ext import commands
@@ -11,7 +10,9 @@ from dotenv import load_dotenv
 
 from llama_index.llms.ollama import Ollama
 
-import bazels_repo
+from src import bazels_repo, bazels_controller
+from src.types import BazelType
+from src.utils import configure_logging
 
 # Load in .env variables
 load_dotenv()
@@ -25,6 +26,7 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 
 # Set up logging
 discord.utils.setup_logging()
+configure_logging()
 logger = logging.getLogger(__name__)
 
 # Set up the bot
@@ -53,23 +55,14 @@ async def on_ready():
 
         messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
-        if len(messages) == bazels_repo.count():
-            logger.info("DB already populated with bazels!")
-
-        else:
-            new_bazels = []
-            for message in messages:
-                new_bazels.append(message.content)
-
-            # Add bazels to the database
-            bazels_repo.add_bazels(new_bazels)
+        bazels_controller.populate_database(messages)
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
 
     logger.info("Ready to BAZEL!")
 
 
-# Error handling
+# Error handling for command not found
 @bot.event
 async def on_command_error(ctx, error):
     """Error handling function"""
@@ -84,95 +77,34 @@ async def on_command_error(ctx, error):
 @cooldown(1, 60, BucketType.user)
 async def bazel(ctx):
     """Generate a bazel"""
-    # Generate the bazel context
-    logger.info("Generating the bazel context")
-    bazel_context = ""
-
+    # Generate the bazel
     try:
-        # Get bazels
-        bazels = bazels_repo.list_bazels()
+        bazel = bazels_controller.generate_bazel()
 
-        # Sample 10 random bazels
-        random_numbers = random.sample(range(0, len(bazels)), 10)
-
-        # Generate bazel context
-        for i in random_numbers:
-            bazel_context += f"- {bazels[i].content}\n"
-
+        # Return the answer to the discord channel
+        await ctx.send(bazel)
     except Exception as exc:
-        logger.error(f"The bazel context could not be generated: {exc}")
-
-    # Format the prompt
-    logger.info("Formatting the prompt")
-
-    question = f"""
-            QUESTION: Combine small parts of the context below to generate a sentence but do not make it long (max 20 words).
-            The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
-            FORMAT OF THE ANSWER: ----- <the generated sentence> -----
-            CONTEXT
-            {bazel_context}
-            """
-
-    logger.info(question)
-
-    # Generate the answer and format it
-    answer = llm.complete(question)
-
-    answer = str(answer).split("-----")[1].replace('"', " ")
-
-    logger.info(answer)
-
-    # Return the answer to the discord channel
-    await ctx.send(answer)
+        # Provide error logging
+        logger.error(f"Something went wrong while generating the bazel: {exc}")
+        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
 
 
 @bot.command(name="cumstom_bazel")
 @cooldown(1, 60, BucketType.user)
 async def custom_bazel(ctx, *, user_context):
-    """Generate a bazel based on user input.
-    Usage: !cumstom_bazel <type_your_input_here>
-    """
-    # Generate the bazel context
-    logger.info("Generating the bazel context")
-    bazel_context = ""
-
+    """Generate a bazel based on user input. Usage: !cumstom_bazel <type_your_input_here>"""
+    # Generate custom bazel
     try:
-        # Get bazels
-        bazels = bazels_repo.list_bazels()
+        custom_bazel = bazels_controller.generate_bazel(
+            user_context=user_context, bazel_type=BazelType.CUSTOM
+        )
 
-        # Sample 10 random bazels
-        random_numbers = random.sample(range(0, len(bazels)), 10)
-
-        # Generate bazel context
-        for i in random_numbers:
-            bazel_context += f"- {bazels[i].content}\n"
-
+        # Return the answer to the discord channel
+        await ctx.send(custom_bazel)
     except Exception as exc:
-        logger.error(f"The bazel context could not be generated: {exc}")
-
-    # Format the prompt
-    logger.info("Formatting the prompt")
-
-    question = f"""
-            QUESTION: Combine small parts of the context below to generate a sentence in Dutch but do not make it long (max 20 words).
-            The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
-            FORMAT OF THE ANSWER: ----- <the generated sentence> -----
-            CONTEXT
-            {bazel_context}
-            try to include this piece of context: {user_context}
-            """
-
-    logger.info(question)
-
-    # Generate the answer and format it
-    answer = llm.complete(question)
-
-    answer = str(answer).split("-----")[1].replace('"', " ")
-
-    logger.info(answer)
-
-    # Return the answer to the discord channel
-    await ctx.send(answer)
+        # Provide error logging
+        logger.error(f"Something went wrong while generating the custom bazel: {exc}")
+        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
 
 
 @bot.command(name="update_bazels")
@@ -185,18 +117,10 @@ async def update_bazel(ctx):
 
         messages = [message async for message in channel.history(limit=MESSAGE_LIMIT)]
 
-        if len(messages) == bazels_repo.count():
-            logger.info("DB already populated with bazels!")
-        else:
-            new_bazels = []
-            for message in messages:
-                new_bazels.append(message.content)
-
-            # Add bazels to the database
-            bazels_repo.add_bazels(new_bazels)
+        amount_of_bazels = bazels_controller.populate_database(messages)
 
         await ctx.send(
-            f"Bazels geupdated, there are now {bazels_repo.count()} bazels stored"
+            f"Added {amount_of_bazels} bazels, there are now {bazels_repo.count()} bazels stored"
         )
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
