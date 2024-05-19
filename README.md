@@ -1,10 +1,10 @@
 # BazelBot
-This is a NSFW discord bot that generates non-sensical gibberish for entertainment purposes.
+This is a discord bot that generates non-sensical gibberish for entertainment purposes.
 The goal of this project is to use the power of LLM's to give my friends a good chuckle.
 
 The main idea is that the bot will pull a certain amount of messages from a discord text channel.
-He will store those messages locally in a CSV file. When the user wants to use the `!bazel` command,
-the bot will take 10 random messages from that file and generate a gibberish sentence, based on those messages.
+He will store those messages in a database. When the user wants to use the `!bazel` command,
+the bot will take 10 random messages from the database and generate a gibberish sentence, based on those messages.
 
 # Deploy
 * Clone the code in a directory of your choosing.
