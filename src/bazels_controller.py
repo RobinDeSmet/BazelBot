@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from src import bazels_repo
 from src.utils import get_session
-from src.types import BazelType
+from src.custom_types import BazelType
 
 
 logger = logging.getLogger(__name__)
