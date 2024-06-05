@@ -129,8 +129,9 @@ def generate_bazel_context(
         bazels = bazels_repo.list(session=session)
 
         # Sample 'nr_bazels' (default 10) random bazels
-        nr_bazels = min(nr_bazels, 10)
-        random_numbers = random.sample(range(0, len(bazels)), nr_bazels)
+        nr_bazels = min(nr_bazels, len(bazels) - 1)
+
+        random_numbers = random.sample(range(len(bazels)), nr_bazels)
 
         # Generate bazel context
         for i in random_numbers:
@@ -162,7 +163,7 @@ def format_prompt(
     match bazel_type:
         case BazelType.NORMAL:
             prompt = f"""
-                QUESTION: Combine small parts of the context below to generate a sentence but do not make it long (max 20 words).
+                QUESTION: Combine small parts of the context below to generate a Dutch sentence, but do not make it long (max 20 words).
                 The goal is to create a new sentence that does not make sense. It can be sexual, and you can be creative!
                 FORMAT OF THE ANSWER: ----- <the generated sentence> -----
                 CONTEXT

@@ -1,12 +1,11 @@
 import os
-from discord import Message
 import pytest
 
 from dotenv import load_dotenv
 from llama_index.llms.ollama import Ollama
 from src.models import Bazel
 from src import bazels_controller, bazels_repo
-from src.custom_types import BazelType
+from tests.conftest import TOTAL_NR_BAZELS
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
@@ -31,7 +30,7 @@ def test_database_connection(setup_database):
 
     print(f"There are {amount_of_bazels} bazels in the test database")
 
-    assert amount_of_bazels == 10
+    assert amount_of_bazels == TOTAL_NR_BAZELS
 
 
 def test_format_answer():
@@ -57,16 +56,20 @@ def test_generate_bazel_context(setup_database):
         setup_database  # You have to give the test session to the controller functions!
     )
 
-    context = bazels_controller.generate_bazel_context(session=session)
+    # Stress test the bazelcontext generation
+    for _ in range(100):
+        context = bazels_controller.generate_bazel_context(session=session)
+        assert context
 
-    print(f"\n{context}")
+    # Test bazelcontext with nr_bazels < bazels in db
+    context = bazels_controller.generate_bazel_context(nr_bazels=2, session=session)
 
-    assert context
+    print(f"NR_BAZELS=2 context: \n{context}")
 
     # Test bazelcontext with nr_bazels > bazels in db
     context = bazels_controller.generate_bazel_context(nr_bazels=20, session=session)
 
-    print(f"\n{context}")
+    print(f"NR_BAZELS=20 context: \n{context}")
 
     assert context
 
@@ -95,42 +98,10 @@ def test_bazel_crud_works(setup_database):
     # List bazels
     bazels = bazels_repo.list(session)
 
-    assert len(bazels) == 11
+    assert len(bazels) == TOTAL_NR_BAZELS + 1
 
     # Cleanup
     bazels_repo.delete(bazel_content, session)
 
     # Check if bazel is successfully deleted
-    assert bazels_repo.count(session) == 10
-
-
-def test_generate_normal_bazel(setup_database):
-    # Get test session
-    session = setup_database
-
-    # Generate normal bazel
-    bazel = bazels_controller.generate_bazel(session=session)
-    print(bazel)
-
-    # Check
-    assert bazel
-    assert len(bazel.split(" ")) <= 50  # Bazel should not be too long
-
-
-def test_generate_custom_bazel(setup_database):
-    # Get test session
-    session = setup_database
-
-    # Generate custom bazel
-    user_context = "Apennootje"
-    custom_bazel = bazels_controller.generate_bazel(
-        user_context=user_context, bazel_type=BazelType.CUSTOM, session=session
-    )
-    print(custom_bazel)
-
-    # Check
-    assert custom_bazel
-    assert len(custom_bazel.split(" ")) <= 50  # Bazel should not be too long
-    assert (
-        user_context in custom_bazel
-    )  # Make sure that the user context is present in the custom bazel
+    assert bazels_repo.count(session) == TOTAL_NR_BAZELS

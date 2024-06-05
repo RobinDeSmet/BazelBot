@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
+TOTAL_NR_BAZELS = 12
 
 
 @pytest.fixture
@@ -41,6 +42,8 @@ def setup_database():
         "Zijn luchtbiertechniek is geweldig",
         "Piemelini",
         "Die koe is verkouden, hij heeft koerona",
+        "Als mijn kat een koe was kon ik ze melken aan mijn stoof!",
+        "Als mijn oma wielen had was ze een fiets.",
     ]
 
     for bazel in bazels:
