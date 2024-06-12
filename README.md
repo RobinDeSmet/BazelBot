@@ -10,7 +10,7 @@ the bot will take 10 random messages from the database and generate a gibberish 
 * Clone the code in a directory of your choosing.
 * Navigate to the root directory of this project.
 * Create and fill in the required details in the `.env` file. You can copy this from `.env.template`
-  * You will have to create a discord both by following these steps: https://discordpy.readthedocs.io/en/stable/discord.html (Make sure to give him admin privileges)
+  * You will have to create a discord bot by following these steps: https://discordpy.readthedocs.io/en/stable/discord.html (Make sure to give him admin privileges)
     In the developer portal, you can retrieve the bot token
   * Activate developer mode in discord: https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID
     and copy the ID of a text channel of your choice. This channel will be used as the inspiration for the bot.
