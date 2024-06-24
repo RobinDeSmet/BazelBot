@@ -83,6 +83,8 @@ pytz==2024.1
 PyYAML==6.0.1
 regex==2024.5.15
 requests==2.31.0
+scikit-learn==1.5.0
+scipy==1.13.1
 setuptools==69.5.1
 six==1.16.0
 smart-open==6.4.0
@@ -96,6 +98,7 @@ srsly==2.4.8
 striprtf==0.0.26
 tenacity==8.3.0
 thinc==8.2.3
+threadpoolctl==3.5.0
 tiktoken==0.7.0
 tomlkit==0.12.5
 tqdm==4.66.4
