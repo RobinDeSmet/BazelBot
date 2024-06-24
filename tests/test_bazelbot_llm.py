@@ -7,6 +7,7 @@ from src.custom_types import BazelType
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
+MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
 NUM_THREADS = int(os.getenv("NUM_THREADS"))
 OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
 LLM = os.getenv("LLM")
@@ -24,12 +25,15 @@ def test_generate_normal_bazel(setup_database):
     session = setup_database
 
     # Generate normal bazel
-    bazel = bazels_controller.generate_bazel(session=session)
-    print(bazel)
+    for index in range(10):
+        print(f"\n\nStress test iteration: {index}")
 
-    # Check
-    assert bazel
-    assert len(bazel.split(" ")) <= 50  # Bazel should not be too long
+        bazel = bazels_controller.generate_bazel(session=session)
+        print(bazel)
+
+        # Check
+        assert bazel
+        assert len(bazel.split(" ")) <= MAX_BAZEL_LENGTH  # Bazel should not be too long
 
 
 def test_generate_custom_bazel(setup_database):
@@ -45,7 +49,9 @@ def test_generate_custom_bazel(setup_database):
 
     # Check
     assert custom_bazel
-    assert len(custom_bazel.split(" ")) <= 50  # Bazel should not be too long
+    assert (
+        len(custom_bazel.split(" ")) <= MAX_BAZEL_LENGTH
+    )  # Bazel should not be too long
     assert (
         user_context.lower() in custom_bazel.lower()
     )  # Make sure that the user context is present in the custom bazel

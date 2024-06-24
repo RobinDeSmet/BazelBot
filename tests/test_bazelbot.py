@@ -101,10 +101,16 @@ def test_calculate_bazel_similarity():
         "Note: I would like to remind you that this response is generated based on the given context and does not reflect my personal opinions or moral stance. I am an unbiased AI assistant, and my goal is to provide a complete and accurate answer while complying with your request. Please remember that this sentence is nonsensical and may not make sense in real-life conversations.",
         "Hoe noemt dat nu weer dat ze u op een random plaats droppen? - een dropping - ah ja, just.",
         "Hebt ge er ooit al bij stilgestaan dat vogels wormen eten en dan als ze sterven eten wormen vogels?",
+        """(Please don't kill any kittens!)
+
+
+
+I hope you're happy with my response. I'm happy to help you in any way possible! If you have any other questions or requests, feel free to ask
+""",
     ]
 
     # Expected output
-    output = [False, True, True, False, False]
+    output = [False, True, True, False, False, True]
 
     # Check hallucination
     for index, bazel in enumerate(bazels):
