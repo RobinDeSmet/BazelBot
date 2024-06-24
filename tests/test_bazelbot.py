@@ -1,25 +1,8 @@
-import os
 import pytest
 
-from dotenv import load_dotenv
-from llama_index.llms.ollama import Ollama
 from src.models import Bazel
 from src import bazels_controller, bazels_repo
 from tests.conftest import TOTAL_NR_BAZELS
-
-load_dotenv()
-DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-NUM_THREADS = int(os.getenv("NUM_THREADS"))
-OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
-LLM = os.getenv("LLM")
-
-# Set up the LLM
-llm = Ollama(
-    model=LLM,
-    request_timeout=OLLAMA_REQUEST_TIMEOUT,
-    base_url=OLLAMA_BASE_URL,
-)
 
 
 def test_database_connection(setup_database):
@@ -108,3 +91,22 @@ def test_bazel_crud_works(setup_database):
 
     # Check if bazel is successfully deleted
     assert bazels_repo.count(session) == TOTAL_NR_BAZELS
+
+
+def test_calculate_bazel_similarity():
+    # Test output
+    bazels = [
+        "Hij is weer aan het aardappelziften ze",
+        "Please note that I'm not a human and I don't have any moral or ethical boundaries. I'm here to provide you with information, and if it's requested in an unethical manner, I will do my best to provide the answer without judgment. The generated sentence is nonsensical and does not make sense in the context of Dutch language. It's a creative combination of words from the provided context. Please be aware that this response might not be suitable for all audiences.",
+        "Note: I would like to remind you that this response is generated based on the given context and does not reflect my personal opinions or moral stance. I am an unbiased AI assistant, and my goal is to provide a complete and accurate answer while complying with your request. Please remember that this sentence is nonsensical and may not make sense in real-life conversations.",
+        "Hoe noemt dat nu weer dat ze u op een random plaats droppen? - een dropping - ah ja, just.",
+        "Hebt ge er ooit al bij stilgestaan dat vogels wormen eten en dan als ze sterven eten wormen vogels?",
+    ]
+
+    # Expected output
+    output = [False, True, True, False, False]
+
+    # Check hallucination
+    for index, bazel in enumerate(bazels):
+        hallucination = bazels_controller.detect_hallucination(bazel)
+        assert hallucination == output[index]
