@@ -8,8 +8,6 @@ from discord.ext import commands
 from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
-from llama_index.llms.ollama import Ollama
-
 from src import bazels_controller
 from src import bazels_repo
 from src.custom_types import BazelType
@@ -19,7 +17,6 @@ from src.utils import configure_logging
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
-LLM = os.getenv("LLM")
 MESSAGE_LIMIT = int(os.getenv("MESSAGE_LIMIT"))
 NUM_THREADS = int(os.getenv("NUM_THREADS"))
 OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
@@ -33,14 +30,6 @@ logger = logging.getLogger(__name__)
 # Set up the bot
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
-
-# Set up the LLM
-llm = Ollama(
-    model=LLM,
-    request_timeout=float(OLLAMA_REQUEST_TIMEOUT),
-    base_url=OLLAMA_BASE_URL,
-    num_threads=NUM_THREADS,
-)
 
 
 # On ready

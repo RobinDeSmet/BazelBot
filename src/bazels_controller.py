@@ -130,9 +130,9 @@ def generate_bazel(
                     logger.info(f"Bazel too long: {formatted_answer}, retrying...")
                     continue
                 return formatted_answer
-            else:
-                logger.info(f"Hallucination detected, retrying...")
-        except IndexError as e:
+
+            logger.info("Hallucination detected, retrying...")
+        except IndexError as _:
             logger.info(
                 f"Raw answer was in the wrong format, retrying... (answer: {raw_answer})"
             )
@@ -266,5 +266,5 @@ def detect_hallucination(text: str) -> bool:
             logger.info(f"Hallucination detected: {text[:50]}")
             return True
 
-    logger.debug(f"No hallucination detected.")
+    logger.debug("No hallucination detected.")
     return False
