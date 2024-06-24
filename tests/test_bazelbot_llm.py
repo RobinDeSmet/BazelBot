@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from llama_index.llms.ollama import Ollama
 from src import bazels_controller
-from src.types import BazelType
+from src.custom_types import BazelType
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")

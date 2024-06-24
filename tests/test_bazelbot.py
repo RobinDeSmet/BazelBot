@@ -57,8 +57,11 @@ def test_generate_bazel_context(setup_database):
     )
 
     # Stress test the bazelcontext generation
-    for _ in range(100):
+    for index in range(100):
+        print(f"Stress test iteration {index}")
+
         context = bazels_controller.generate_bazel_context(session=session)
+
         assert context
 
     # Test bazelcontext with nr_bazels < bazels in db
