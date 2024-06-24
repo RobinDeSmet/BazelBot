@@ -23,6 +23,8 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 LLM = os.getenv("LLM")
+MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
+MAX_RETRIES = int(os.getenv("MAX_RETRIES"))
 MESSAGE_LIMIT = int(os.getenv("MESSAGE_LIMIT"))
 NUM_THREADS = int(os.getenv("NUM_THREADS"))
 OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
@@ -97,26 +99,49 @@ def generate_bazel(
     """
     logger.info("Generating bazel...")
 
-    try:
-        # Get bazel context
-        bazel_context = generate_bazel_context(nr_bazels=nr_bazels, session=session)
+    formatted_answer = "Nonedju, ik heb mij kapotgebazeld!"
 
-        # Formatting prompt
-        prompt = format_prompt(
-            context=bazel_context, bazel_type=bazel_type, user_context=user_context
-        )
+    for index in range(MAX_RETRIES):
+        logger.debug(f"Iteration {index + 1}:")
 
-        # Query the llm
-        raw_answer = llm.complete(prompt)
+        try:
+            # Get bazel context
+            bazel_context = generate_bazel_context(nr_bazels=nr_bazels, session=session)
 
-        # Format the answer
-        formatted_answer = format_the_answer(raw_answer=raw_answer)
+            # Formatting prompt
+            prompt = format_prompt(
+                context=bazel_context, bazel_type=bazel_type, user_context=user_context
+            )
 
-        logger.info(f"Bazel successfully generated: {formatted_answer}!")
-        return formatted_answer
-    except Exception as exc:
-        logger.error(f"Bazel could not be generated: {exc}")
-        raise exc
+            # Query the llm
+            raw_answer = llm.complete(prompt)
+
+            # Format the answer
+            formatted_answer = format_the_answer(raw_answer=raw_answer)
+
+            # Detect hallucination
+            hallucination = detect_hallucination(formatted_answer)
+
+            if not hallucination:
+                logger.info(f"Bazel successfully generated: {formatted_answer}!")
+
+                # Check bazel length
+                if len(formatted_answer.split(" ")) > MAX_BAZEL_LENGTH:
+                    logger.info(f"Bazel too long: {formatted_answer}, retrying...")
+                    continue
+                return formatted_answer
+            else:
+                logger.info(f"Hallucination detected, retrying...")
+        except IndexError as e:
+            logger.info(
+                f"Raw answer was in the wrong format, retrying... (answer: {raw_answer})"
+            )
+        except Exception as exc:
+            logger.error(f"Bazel could not be generated: {exc}")
+            raise exc
+
+    logger.info("Max retries reached, returning the hallucination")
+    return formatted_answer
 
 
 def generate_bazel_context(
