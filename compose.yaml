@@ -3,6 +3,7 @@ services:
     container_name: bazelbot-server
     build:
       context: .
+    restart: always
     env_file:
       - .env
     ports:
@@ -16,6 +17,7 @@ services:
         condition: service_healthy
   migration:
     build: .
+    restart: always
     command: alembic upgrade head
     env_file:
       - .env
@@ -26,10 +28,12 @@ services:
       - ./src/data:/app/src/data
   ollama-pull:
     image: docker/genai:ollama-pull
+    restart: always
     env_file:
       - .env
   ollama:
     image: ollama/ollama:latest
+    restart: always
     ports:
       - "11434:11434"
     volumes:
