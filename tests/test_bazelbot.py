@@ -1,6 +1,6 @@
 import pytest
 
-from src.models import Bazel
+from src.db_models import Bazel
 from src import bazels_controller, bazels_repo
 from tests.conftest import TOTAL_NR_BAZELS
 

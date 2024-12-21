@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, delete
 
-from src.models import Bazel
+from src.db_models import Bazel
 
 logger = logging.getLogger(__name__)
 

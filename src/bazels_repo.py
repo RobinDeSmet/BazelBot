@@ -7,7 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.utils import get_session
-from src.models import Bazel
+from src.db_models import Bazel
 
 logger = logging.getLogger(__name__)
 

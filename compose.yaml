@@ -6,45 +6,25 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+    - DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@bazelbot-db-1:5432/bazelbot_db
     ports:
       - 8000:8000
     volumes:
       - ./src/data:/app/src/data
-    depends_on:
-      ollama-pull:
-        condition: service_completed_successfully
-      db:
-        condition: service_healthy
   migration:
     build: .
     restart: always
     command: alembic upgrade head
     env_file:
       - .env
+    environment:
+    - DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@bazelbot-db-1:5432/bazelbot_db
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./src/data:/app/src/data
-  ollama-pull:
-    image: docker/genai:ollama-pull
-    restart: always
-    env_file:
-      - .env
-  ollama:
-    image: ollama/ollama:latest
-    restart: always
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_volume:/root/.ollama
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
   db:
     image: postgres
     restart: always
@@ -72,4 +52,3 @@ services:
       - ADMINER_DEFAULT_DATABASE=bazelbot_db
 volumes:
   db-data:
-  ollama_volume:

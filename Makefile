@@ -21,12 +21,3 @@ up:
 
 down:
 	docker compose down
-
-test-up:
-	docker compose -f compose-test.yaml up -d
-
-test-down:
-	docker compose -f compose-test.yaml down
-
-test-reset:
-	docker compose -f compose-test.yaml down && docker compose -f compose-test.yaml up -d
