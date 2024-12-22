@@ -1,4 +1,5 @@
 "Module to centralize the util function for the app"
+
 import logging
 import os
 

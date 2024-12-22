@@ -1,7 +1,7 @@
 """Create initial migration
 
 Revision ID: 5cfa69fff879
-Revises: 
+Revises:
 Create Date: 2024-05-13 11:18:49.121704
 
 """
