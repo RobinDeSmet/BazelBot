@@ -18,9 +18,7 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 MESSAGE_LIMIT = int(os.getenv("MESSAGE_LIMIT"))
-NUM_THREADS = int(os.getenv("NUM_THREADS"))
-OLLAMA_REQUEST_TIMEOUT = int(os.getenv("OLLAMA_REQUEST_TIMEOUT"))
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
+RATE_LIMIT = int(os.getenv("RATE_LIMIT"))
 
 # Set up logging
 discord.utils.setup_logging()
@@ -29,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 # Set up the bot
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 
 # On ready
@@ -58,13 +56,46 @@ async def on_command_error(ctx, error):
     """Error handling function"""
     if isinstance(error, commands.CommandNotFound):
         await ctx.send(
-            "Command not found! Try `!help` for a list of available commands."
+            "Command not found! Try `/help_daddy` for a list of available commands."
         )
+
+
+# Help command
+@bot.command(name="help_daddy")
+async def help(ctx):
+    help_message = """**🤖 Hulpcommando's voor de bot!**
+Jongens, jongens... weet je het nu nog niet? 😞
+Hier zijn de commando's die je kan gebruiken:
+
+📜 **Algemene commando's**
+- `/help`
+   : _Lijst van hulpcommando's._
+- `/bazel`
+   : _Genereer een bazel._
+- `/custom_bazel <context>`
+   : _Genereer een bazel die de gegeven context bevat._
+- `/update_bazels`
+   : _Update de bazels in de database._
+
+✋ **Interactie met de bot**
+- `/klets_bots`
+   : _De bot een mep verkopen._
+- `/klets <object>`
+   : _Iemand of iets een klets verkopen._
+
+😇 **Gedrag van de bot**
+- `/stout`
+   : _Als de bot niet braaf is._
+- `/braaf`
+   : _Als de bot niet stout is._
+"""
+    logger.info("Supplying the help doctring...")
+    await ctx.send(help_message)
 
 
 # Core commands
 @bot.command(name="bazel")
-@cooldown(1, 60, BucketType.user)
+@cooldown(1, RATE_LIMIT, BucketType.user)
 async def bazel(ctx):
     """Generate a bazel"""
     # Generate the bazel
@@ -72,7 +103,7 @@ async def bazel(ctx):
         new_bazel = bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
-        await ctx.send(new_bazel)
+        await ctx.send(new_bazel.text)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the bazel: {exc}")
@@ -80,7 +111,7 @@ async def bazel(ctx):
 
 
 @bot.command(name="cumstom_bazel")
-@cooldown(1, 60, BucketType.user)
+@cooldown(1, RATE_LIMIT, BucketType.user)
 async def custom_bazel(ctx, *, user_context):
     """Usage: !cumstom_bazel <type_your_input_here>"""
     # Generate custom bazel
@@ -90,7 +121,7 @@ async def custom_bazel(ctx, *, user_context):
         )
 
         # Return the answer to the discord channel
-        await ctx.send(new_custom_bazel)
+        await ctx.send(new_custom_bazel.text)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")
@@ -98,7 +129,7 @@ async def custom_bazel(ctx, *, user_context):
 
 
 @bot.command(name="update_bazels")
-@cooldown(1, 5, BucketType.user)
+@cooldown(1, RATE_LIMIT, BucketType.user)
 async def update_bazel(ctx):
     """Update the saved bazels"""
     # Retrieve all bazels from the channel and store them in our db
@@ -119,7 +150,7 @@ async def update_bazel(ctx):
 
 # Basic commands
 @bot.command(name="klets_bots")
-@cooldown(1, 5, BucketType.user)
+@cooldown(1, 1, BucketType.user)
 async def klets(ctx):
     """klets the bot"""
     logger.info("Petsing the bot...")
@@ -128,7 +159,7 @@ async def klets(ctx):
 
 
 @bot.command(name="klets")
-@cooldown(1, 5, BucketType.user)
+@cooldown(1, 1, BucketType.user)
 async def klets_someone(ctx, name):
     """klets someone: !klets_someone <name>"""
     logger.info(f"Petsing {name}...")
@@ -137,7 +168,7 @@ async def klets_someone(ctx, name):
 
 
 @bot.command(name="stout")
-@cooldown(1, 5, BucketType.user)
+@cooldown(1, 1, BucketType.user)
 async def stout(ctx):
     """stout"""
     logger.info("Telling the bot he has been bad...")
@@ -146,7 +177,7 @@ async def stout(ctx):
 
 
 @bot.command(name="braaf")
-@cooldown(1, 5, BucketType.user)
+@cooldown(1, 1, BucketType.user)
 async def braaf(ctx):
     """braaf"""
     logger.info("Telling the bot he is a good LLM...")
