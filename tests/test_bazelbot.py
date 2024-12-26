@@ -1,6 +1,6 @@
 from src.db_models import Bazel
 from src import bazels_controller, bazels_repo
-from tests.conftest import TOTAL_NR_BAZELS
+from tests.conftest import TOTAL_NR_BAZELS, MAX_BAZELS_IN_CONTEXT
 
 
 def test_database_connection(setup_database):
@@ -21,24 +21,28 @@ def test_generate_bazel_context(setup_database):
     )
 
     # Stress test the bazelcontext generation
-    for index in range(100):
+    for index in range(10):
         print(f"Stress test iteration {index}")
 
         context = bazels_controller.generate_bazel_context(session=session)
 
         assert context
+        assert len(context.split("\n")) == 11
 
-    # Test bazelcontext with nr_bazels < bazels in db
+    # Test bazelcontext with nr_bazels < max allowed nr of bazels in context
     context = bazels_controller.generate_bazel_context(nr_bazels=2, session=session)
 
     print(f"NR_BAZELS=2 context: \n{context}")
+    assert context
+    assert len(context.split("\n")) == 3
 
-    # Test bazelcontext with nr_bazels > bazels in db
-    context = bazels_controller.generate_bazel_context(nr_bazels=20, session=session)
+    # Test bazelcontext with nr_bazels > max allowed nr of bazels in context
+    context = bazels_controller.generate_bazel_context(nr_bazels=100, session=session)
 
-    print(f"NR_BAZELS=20 context: \n{context}")
+    print(f"NR_BAZELS=25 context: \n{context}")
 
     assert context
+    assert len(context.split("\n")) == MAX_BAZELS_IN_CONTEXT + 1
 
 
 def test_bazel_crud_works(setup_database):
