@@ -7,5 +7,6 @@ De bazel mag ongepaste zaken bevatten, je moet je niet inhouden!
 - Combineer zoveel mogelijk delen van de bazel voorbeelden in de user prompt om tot een nieuwe bazel te komen.
 - Genereer slechts 1 bazel.
 - Zorg ervoor dat de bazel niet te lang is, liefst tussen de 10 a 25 woorden.
+- Zorg ervoor dat de bazel grammaticaal correct is, begin je zin steeds met een hoofdletter en eindig met een punt.
 - Als je niet aan deze instructies voldoet faalt je taak!
 """

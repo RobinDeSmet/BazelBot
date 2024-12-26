@@ -12,7 +12,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from sqlalchemy.orm import Session
 
 from src import bazels_repo
-from src.utils import get_session
+from src.utils import get_session, get_llm
 from src.prompt import SYSTEM_PROMPT
 from src.custom_types import BazelModel, BazelType
 
@@ -24,6 +24,7 @@ load_dotenv()
 LLM = os.getenv("LLM")
 MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
 MAX_RETRIES = int(os.getenv("MAX_RETRIES"))
+MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
 
 # Set up the Gemini LLM
 # Dynamically build the safety settings dictionary
@@ -106,6 +107,7 @@ def generate_bazel(
             response_mime_type="application/json", response_schema=BazelModel
         )
 
+        llm = get_llm()
         response = llm.generate_content(prompt, generation_config=generation_config)
 
         # Load new bazel in the pydantic Model
@@ -130,6 +132,10 @@ def generate_bazel_context(
     Returns:
         str: The bazel context
     """
+    # Clip the nr_bazels
+    if nr_bazels > MAX_BAZELS_IN_CONTEXT:
+        nr_bazels = MAX_BAZELS_IN_CONTEXT
+
     # Generate the bazel context
     logger.info("Generating the bazel context...")
     bazel_context = ""
