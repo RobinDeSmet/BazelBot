@@ -1,0 +1,51 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up environment variables
+        run: |
+          touch .env
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "CHANNEL_ID=313397112777867264" >> .env
+          echo "DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db" >> .env
+          echo "MAX_BAZEL_LENGTH=25" >> .env
+          echo "MESSAGE_LIMIT=10000" >> .env
+          echo "RATE_LIMIT=10" >> .env
+          echo "MAX_BAZELS_IN_CONTEXT=25" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "GEMINI_MODEL=gemini-2.0-flash-exp" >> .env
+      - name: Install Python and Poetry
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12'
+      - run: pip install poetry
+      - run: poetry install
+
+      - name: Create docker containers
+        run: docker compose -f compose.test.yaml up -d
+
+      - name: Wait for Database
+        run: |
+          for i in {1..10}; do
+            docker exec bazelbot-db-1 pg_isready -U postgres && break
+            sleep 5
+          done
+
+      - name: Check running containers
+        run: docker ps -a
+
+      - name: Run Ruff Check
+        run: poetry run ruff check .
+
+      - name: Run Black Check
+        run: poetry run black --check .
+
+      - name: Run Pytest
+        run: poetry run pytest -s -v -m "not llm"

@@ -1,51 +1,59 @@
 import pytest
-import logging
-import os
 import hashlib
+import os
 
 from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, delete
 
-from src.models import Bazel
-
-logger = logging.getLogger(__name__)
+from src.db_models import Bazel
 
 load_dotenv()
+
+MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
 TOTAL_NR_BAZELS = 50
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def setup_database():
-    """Fixture to set up the database with test data"""
+    """Fixture to set up the database with test data."""
     # Setup test connection
     engine = create_engine(DB_CONNECTION_URL)
+    TestSession = sessionmaker(bind=engine)
+    test_session = TestSession()
 
-    test_session_maker = sessionmaker(bind=engine)
+    try:
+        # Clear existing data in the bazels table
+        test_session.execute(delete(Bazel))
 
-    test_session = test_session_maker()
+        # Populate test database
+        try:
+            with open("tests/test_data.txt", "r") as file:
+                bazels = file.readlines()
 
-    # Delete the existing rows in the bazels table
-    test_session.execute(delete(Bazel))
+            bazel_objects = [
+                Bazel(
+                    content=bazel.strip(),
+                    content_hash=hashlib.sha256(
+                        bazel.strip().encode("utf-8")
+                    ).hexdigest(),
+                )
+                for bazel in bazels
+            ]
 
-    # # Populate test database
-    with open("tests/test_data.txt", "r") as file:
-        bazels = file.readlines()
-
-        for bazel in bazels:
-            # Remove end of line character
-            bazel = bazel.replace("\n", "")
-
-            # Generate content hash
-            content_hash = hashlib.sha256(bazel.encode("utf-8")).hexdigest()
-
-            # Create bazel object
-            bazel = Bazel(content=bazel, content_hash=content_hash)
-
-            # Add bazel object
-            test_session.add(bazel)
+            # Add all records at once
+            test_session.add_all(bazel_objects)
             test_session.commit()
+        except FileNotFoundError:
+            pytest.fail("Test data file not found: tests/test_data.txt")
+        except Exception as e:
+            pytest.fail(f"An error occurred while reading test data: {e}")
 
-    yield test_session
+        # Yield the session to the test
+        yield test_session
+    finally:
+        # Cleanup after test
+        test_session.execute(delete(Bazel))
+        test_session.commit()
+        test_session.close()

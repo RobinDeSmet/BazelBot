@@ -1,57 +1,41 @@
-# syntax=docker/dockerfile:1
-
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
+# Stage 0: base image for bazelbot
 ARG PYTHON_VERSION=3.12
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:${PYTHON_VERSION} as base
 
-# Prevents Python from writing pyc files.
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 \
+    PATH=/opt/poetry/bin:$PATH \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache \
+    HOME=/home/
+ENV VIRTUAL_ENV="${HOME}/.venv"
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
-# Keeps Python from buffering stdout and stderr to avoid situations where
-# the application crashes without emitting any logs due to buffering.
-ENV PYTHONUNBUFFERED=1
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --version 1.8.5 && \
+    groupadd -g 1234 appuser && \
+    useradd -m -u 1234 -g appuser appuser && \
+    mkdir -p ${HOME}
 
-# Set the PYTHONPATH environment variable
-ENV PYTHONPATH /app
+WORKDIR ${HOME}
 
-WORKDIR /app
+ENV PYTHONPATH="${HOME}/src:${PYTHONPATH}"
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
-
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
-# Leverage a bind mount to requirements.txt to avoid having to copy them into
-# into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
-
-# Switch to the non-privileged user to run the application.
-USER appuser
-
-# Copy the source code into the container.
-COPY . .
+# Stage 1: build image
+# Install all runtime dependencies,
+# but without project's sources, which get copied later
+FROM base as build
+COPY pyproject.toml poetry.lock ${HOME}
+COPY . ${HOME}
+RUN poetry install --no-root --only main && rm -rf ${POETRY_CACHE_DIR}
 
 # Set the .env files
 ENV $(cat .env)
 
-# Expose the port that the application listens on.
+USER appuser
+
 EXPOSE 8000
 
-# Run the application.
-CMD python src/bazelbot.py
+CMD poetry run python src/bazelbot.py

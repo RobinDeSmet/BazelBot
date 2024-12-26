@@ -1,18 +1,20 @@
 services:
   migration:
-    container_name: bazelbot-test-migration
     build:
       context: .
       dockerfile: Dockerfile.test
     command: alembic upgrade head
     env_file:
       - .env
+    environment:
+    - DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@bazelbot-db-1:5432/bazelbot_db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src/data:/app/src/data
   db:
-    container_name: bazelbot-test-db
     image: postgres
-    restart: always
     user: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -20,21 +22,20 @@ services:
       - POSTGRES_DB=bazelbot_db
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
   adminer:
     image: adminer
-    container_name: bazelbot-test-adminer
     restart: always
     ports:
-      - 8081:8080
+      - 8080:8080
     environment:
-      - ADMINER_DEFAULT_SERVER=bazelbot-test-db
-      - ADMINER_DEFAULT_USER=postgres
+      - ADMINER_DEFAULT_SERVER=bazelbot-db-1
+      - ADMINER_DEFAULT_USERNAME=postgres
       - ADMINER_DEFAULT_DATABASE=bazelbot_db
 volumes:
   db-data:

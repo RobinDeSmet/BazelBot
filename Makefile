@@ -1,32 +1,26 @@
-fmt:
-	black src -v --target-version py310
-
-pylint:
-	pylint --rcfile=".pylintrc" src
-
 test:
-	pytest -vv -s tests/test_bazelbot.py
+	poetry shell & poetry run pytest -s -v -m "not llm"
 
 test-llm:
-	pytest -vv -s tests/test_bazelbot_llm.py
+	poetry shell & poetry run pytest -s -v -m "llm"
 
 run:
 	poetry shell & poetry run python src/bazelbot.py
-
-reset:
-	docker compose down && docker compose up -d
 
 up:
 	docker compose up -d
 
 down:
-	docker compose down
+	docker compose down -v
+
+reset:
+	docker compose down && docker compose up -d
 
 test-up:
-	docker compose -f compose-test.yaml up -d
+	docker compose -f compose.test.yaml up -d
 
 test-down:
-	docker compose -f compose-test.yaml down
+	docker compose -v -f compose.test.yaml down
 
 test-reset:
-	docker compose -f compose-test.yaml down && docker compose -f compose-test.yaml up -d
+	docker compose -v -f compose.test.yaml down && docker compose -f compose.test.yaml up -d
