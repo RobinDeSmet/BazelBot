@@ -41,5 +41,11 @@ jobs:
       - name: Check running containers
         run: docker ps -a
 
+      - name: Run Ruff Check
+        run: poetry run ruff check .
+
+      - name: Run Black Check
+        run: poetry run black --check .
+
       - name: Run Pytest
         run: poetry run pytest -s -v -m "not llm"
