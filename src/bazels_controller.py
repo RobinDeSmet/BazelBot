@@ -8,12 +8,10 @@ import os
 from discord import Message
 from dotenv import load_dotenv
 import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from sqlalchemy.orm import Session
 
 from src import bazels_repo
 from src.utils import get_session, get_llm
-from src.prompt import SYSTEM_PROMPT
 from src.custom_types import BazelModel, BazelType
 
 
@@ -23,24 +21,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 LLM = os.getenv("LLM")
 MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
-MAX_RETRIES = int(os.getenv("MAX_RETRIES"))
 MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
-
-# Set up the Gemini LLM
-# Dynamically build the safety settings dictionary
-safety_settings = {
-    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-}
-
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-llm = genai.GenerativeModel(
-    os.environ.get("GEMINI_MODEL"),
-    safety_settings=safety_settings,
-    system_instruction=SYSTEM_PROMPT,
-)
 
 
 def populate_database(messages: list[Message], session: Session = get_session()) -> int:
