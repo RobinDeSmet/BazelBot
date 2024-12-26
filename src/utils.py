@@ -44,8 +44,12 @@ def get_session() -> Session:
 
 
 def get_llm() -> genai.GenerativeModel:
-    # Set up the Gemini LLM
-    # Dynamically build the safety settings dictionary
+    """Retrieve the LLM.
+
+    Returns:
+        genai.GenerativeModel: The resulting model.
+    """
+    # Configure safety settings
     safety_settings = {
         HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
@@ -53,7 +57,10 @@ def get_llm() -> genai.GenerativeModel:
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
     }
 
+    # Configure Google-Generative AI package with API key
     genai.configure(api_key=GEMINI_API_KEY)
+
+    # Configure the model
     llm = genai.GenerativeModel(
         GEMINI_MODEL,
         safety_settings=safety_settings,

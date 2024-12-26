@@ -1,0 +1,19 @@
+name: Run Test Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create docker containers
+        env:
+          COMPOSE_INTERACTIVE_NO_CLI: 1
+        run: docker compose -f compose.test.yaml up -d
+      - name: Check running containers
+        run: docker ps -a
+      - name: Pytest
+        run: poetry run pytest -s -v -m "not llm"
