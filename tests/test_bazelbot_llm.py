@@ -16,7 +16,7 @@ def test_generate_normal_bazel(setup_database):
 
     # Generate normal bazel
     bazel = bazels_controller.generate_bazel(session=session)
-    print(bazel.text)
+    print(bazel)
 
     # Check
     assert bazel
@@ -35,7 +35,7 @@ def test_generate_custom_bazel(setup_database):
     custom_bazel = bazels_controller.generate_bazel(
         user_context=user_context, bazel_type=BazelType.CUSTOM, session=session
     )
-    print(custom_bazel.text)
+    print(custom_bazel)
 
     # Check
     assert custom_bazel

@@ -43,11 +43,17 @@ def get_session() -> Session:
     return session()
 
 
-def get_llm() -> genai.GenerativeModel:
-    """Retrieve the LLM.
+def get_llm(
+    model: str = GEMINI_MODEL, system_instruction: str = SYSTEM_PROMPT
+) -> genai.GenerativeModel:
+    """Retrieve an LLM instance.
+
+    Args:
+        model (str, optional): The specific llm model. Defaults to GEMINI_MODEL.
+        system_instruction (str, optional): The system instructions. Defaults to SYSTEM_PROMPT.
 
     Returns:
-        genai.GenerativeModel: The resulting model.
+        genai.GenerativeModel: The resulting model based on the input settings.
     """
     # Configure safety settings
     safety_settings = {
@@ -62,9 +68,9 @@ def get_llm() -> genai.GenerativeModel:
 
     # Configure the model
     llm = genai.GenerativeModel(
-        GEMINI_MODEL,
+        model,
         safety_settings=safety_settings,
-        system_instruction=SYSTEM_PROMPT,
+        system_instruction=system_instruction,
     )
 
     return llm
