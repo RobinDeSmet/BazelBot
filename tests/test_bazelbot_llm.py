@@ -1,9 +1,10 @@
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 from src import bazels_controller
 from src.custom_types import BazelType
 import pytest
+
+from src.utils import create_image_save_path_from_bazel
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
@@ -27,8 +28,8 @@ def test_generate_normal_bazel(setup_database):
     )  # Bazel should not be too long
 
     # Check that there is no generated image
-    file_path = Path(BAZEL_IMAGE_SAVE_PATH, "bazel_image.png")
-    assert not file_path.exists()
+    bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
+    assert not bazel_image_save_path.exists()
 
 
 @pytest.mark.llm
@@ -53,8 +54,8 @@ def test_generate_custom_bazel(setup_database):
     )  # Make sure that the user context is present in the custom bazel
 
     # Check that there is no generated image
-    file_path = Path(BAZEL_IMAGE_SAVE_PATH, "bazel_image.png")
-    assert not file_path.exists()
+    bazel_image_save_path = create_image_save_path_from_bazel(custom_bazel.text_english)
+    assert not bazel_image_save_path.exists()
 
 
 @pytest.mark.llm
@@ -73,8 +74,5 @@ def test_generate_bazel_with_image(setup_database):
     )  # Bazel should not be too long
 
     # Check if the file exists
-    file_path = Path(BAZEL_IMAGE_SAVE_PATH, "bazel_image.png")
-    assert file_path.exists() and file_path.is_file()
-
-    # Cleanup the file
-    file_path.unlink()
+    bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
+    assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()

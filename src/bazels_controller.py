@@ -9,12 +9,12 @@ import os
 from discord import Message
 from dotenv import load_dotenv
 import google.generativeai as genai
-import pollinations
 from sqlalchemy.orm import Session
 
 from src import bazels_repo
+from src import custom_types
 from src.prompt import SYSTEM_PROMPT_IMAGE_GENERATION
-from src.utils import get_session, get_llm
+from src.utils import create_image_save_path_from_bazel, get_session, get_llm
 from src.custom_types import BazelImageDescriptionModel, BazelModel, BazelType
 
 
@@ -112,7 +112,7 @@ def generate_bazel(
         raise ValueError(f"Bazel could not be generated: {exc}") from exc
 
 
-def generate_image_for_bazel(bazel_english: str, retries=3):
+def generate_image_for_bazel(bazel_english: str, retries=2):
     """Generate an image for the given bazel.
 
     Args:
@@ -140,8 +140,8 @@ def generate_image_for_bazel(bazel_english: str, retries=3):
     logger.info(f"Bazel description: {new_bazel_image_description.description}")
 
     # Initialize the image model
-    model_obj = pollinations.ImageModel(
-        model=pollinations.evil,
+    model_obj = custom_types.ImageModel(
+        model="evil",
         seed="random",
         width=BAZEL_IMAGE_WIDTH,
         height=BAZEL_IMAGE_HEIGHT,
@@ -152,7 +152,8 @@ def generate_image_for_bazel(bazel_english: str, retries=3):
     if not bazel_image_dir.exists():
         bazel_image_dir.mkdir(parents=True, exist_ok=True)
 
-    bazel_image_save_path = Path(bazel_image_dir, "bazel_image.png")
+    # Create image save path
+    bazel_image_save_path = create_image_save_path_from_bazel(bazel_english)
 
     # Generate bazel image and save it locally
     for attempt in range(retries):
