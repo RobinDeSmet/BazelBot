@@ -34,9 +34,3 @@ build-backend = "poetry.core.masonry.api"
 markers = [
     "llm: Tests where we need communication with one or multiple LLMs.",
 ]
-
-[tool.ruff]
-line-length = 88
-
-[tool.black]
-line-length = 88
