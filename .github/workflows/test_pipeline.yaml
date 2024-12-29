@@ -21,6 +21,9 @@ jobs:
           echo "MAX_BAZELS_IN_CONTEXT=25" >> .env
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
           echo "GEMINI_MODEL=gemini-2.0-flash-exp" >> .env
+          echo "BAZEL_IMAGE_WIDTH=350" >> .env
+          echo "BAZEL_IMAGE_LENGTH=350" >> .env
+          echo "BAZEL_IMAGE_SAVE_PATH=src/data" >> .env
       - name: Install Python and Poetry
         uses: actions/setup-python@v3
         with:

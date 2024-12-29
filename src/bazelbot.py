@@ -1,6 +1,6 @@
 """Module for the bazelbot"""
 
-# TODO: Fix async issues with the bot: https://chatgpt.com/c/677126d1-e4ac-8012-ae0e-bad269144dc5
+# TODO: Fix async issues with the bot: https://chatgpt.com/c/6771c544-fe7c-8012-a46a-1f142533db79
 import os
 import logging
 import discord
