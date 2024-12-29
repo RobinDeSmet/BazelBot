@@ -20,8 +20,6 @@ pyyaml = "6.0.1"
 black = "^24.10.0"
 ruff = "^0.8.4"
 pillow = "^11.0.0"
-diffusers = "^0.32.1"
-torch = "^2.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
