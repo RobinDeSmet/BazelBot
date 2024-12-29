@@ -47,7 +47,9 @@ class ImageObject(object):
         self.negative: str = str(negative)
         self.model: str = str(model)
         self.params: dict = dict(params)
-        self.time: str = f"[{datetime.date.today().strftime('%Y-%m-%d')}] {time.strftime('%H:%M:%S')}"
+        self.time: str = (
+            f"[{datetime.date.today().strftime('%Y-%m-%d')}] {time.strftime('%H:%M:%S')}"
+        )
 
     def save(
         self, file: str = "image-output.png", timeout: int = 60, *args, **kwargs
@@ -106,7 +108,9 @@ class ImageModel(object):
         if self.seed == "random":
             seed: int = random.randint(0, 9999999999)
 
-        params: str = f"negative={negative}&seed={seed}&width={self.width}&height={self.height}&nologo={self.nologo}&private={self.private}&model={self.model}&enhance={self.enhance}"
+        params: str = (
+            f"negative={negative}&seed={seed}&width={self.width}&height={self.height}&nologo={self.nologo}&private={self.private}&model={self.model}&enhance={self.enhance}"
+        )
         url: str = f"https://{IMAGE_API}/prompt/{prompt}?{params}"
         request: requests.Request = requests.get(
             url=url,
