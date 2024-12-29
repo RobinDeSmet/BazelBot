@@ -10,6 +10,13 @@ class BazelModel(BaseModel):
     text_english: str = Field(..., description="The English version of the Bazel.")
 
 
+class BazelImageDescriptionModel(BaseModel):
+    description: str = Field(
+        ...,
+        description="The detailed description of the Bazel used to generate an image.",
+    )
+
+
 class BazelType(Enum):
     """Bazeltype enum"""
 

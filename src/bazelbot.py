@@ -113,7 +113,7 @@ async def bazel(ctx):
 @bot.command(name="cumstom_bazel")
 @cooldown(1, RATE_LIMIT, BucketType.user)
 async def custom_bazel(ctx, *, user_context):
-    """Usage: !cumstom_bazel <type_your_input_here>"""
+    """Generate custom bazel."""
     # Generate custom bazel
     try:
         new_custom_bazel = bazels_controller.generate_bazel(
