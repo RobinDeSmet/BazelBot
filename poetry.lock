@@ -249,17 +249,6 @@ files = [
 ]
 
 [[package]]
-name = "chardet"
-version = "5.2.0"
-description = "Universal encoding detector for Python 3"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "chardet-5.2.0-py3-none-any.whl", hash = "sha256:e1cf59446890a00105fe7b7912492ea04b6e6f06d4b742b2c788469e34c82970"},
-    {file = "chardet-5.2.0.tar.gz", hash = "sha256:1b3b6ff479a8c414bc3fa2c0852995695c4a026dcd6d0633b2dd092ca39c1cf7"},
-]
-
-[[package]]
 name = "charset-normalizer"
 version = "3.4.1"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
@@ -1658,21 +1647,6 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
-name = "pollinations"
-version = "2.1"
-description = "pollinations.ai | Image Generation"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pollinations-2.1-py3-none-any.whl", hash = "sha256:3b864a15f0ef5a4c285f752209fd9ba2334a5cded3a3cd84126326788c2178c7"},
-    {file = "pollinations-2.1.tar.gz", hash = "sha256:4cb49302aa98511308039f87533c831c15cd0cb5b771dd16665b7cf21d2062dc"},
-]
-
-[package.dependencies]
-chardet = "*"
-pillow = "*"
-
-[[package]]
 name = "propcache"
 version = "0.2.1"
 description = "Accelerated property cache"
@@ -2857,4 +2831,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "db80ad0fb3fb67daa4867c9cda12e0a76e1c929b4ac9646ab2492830e6b15bc1"
+content-hash = "5edbdfe7f12b1022a527aa4f521d164f6a1b1d49b618c16a752344fc049edb9d"
