@@ -1,7 +1,9 @@
 "Module to centralize the util function for the app"
 
+from datetime import datetime
 import logging
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -16,6 +18,7 @@ load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
 
 
 def configure_logging():
@@ -43,11 +46,17 @@ def get_session() -> Session:
     return session()
 
 
-def get_llm() -> genai.GenerativeModel:
-    """Retrieve the LLM.
+def get_llm(
+    model: str = GEMINI_MODEL, system_instruction: str = SYSTEM_PROMPT
+) -> genai.GenerativeModel:
+    """Retrieve an LLM instance.
+
+    Args:
+        model (str, optional): The specific llm model. Defaults to GEMINI_MODEL.
+        system_instruction (str, optional): The system instructions. Defaults to SYSTEM_PROMPT.
 
     Returns:
-        genai.GenerativeModel: The resulting model.
+        genai.GenerativeModel: The resulting model based on the input settings.
     """
     # Configure safety settings
     safety_settings = {
@@ -62,9 +71,34 @@ def get_llm() -> genai.GenerativeModel:
 
     # Configure the model
     llm = genai.GenerativeModel(
-        GEMINI_MODEL,
+        model,
         safety_settings=safety_settings,
-        system_instruction=SYSTEM_PROMPT,
+        system_instruction=system_instruction,
     )
 
     return llm
+
+
+def create_image_save_path_from_bazel(bazel: str) -> Path:
+    """Create a save path from a bazel.
+
+    Args:
+        bazel (str): Bazel in text format.
+
+    Returns:
+        Path: Output path created from the bazel
+    """
+    bazel_alphabetical = "".join(char for char in bazel if char.isalpha())
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%Y_%m_%d")
+
+    bazel_image_path = Path(
+        BAZEL_IMAGE_SAVE_PATH,
+        formatted_date,
+        f"bazel_image_{bazel_alphabetical[:20]}.png",
+    )
+
+    if not bazel_image_path.parent.exists():
+        bazel_image_path.parent.mkdir(parents=True, exist_ok=True)
+
+    return bazel_image_path

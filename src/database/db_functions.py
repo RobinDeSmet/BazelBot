@@ -1,29 +1,15 @@
-"""Repo module to talk to the database for the bazels"""
+"""Module with the db functions."""
 
 import logging
-import hashlib
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from src.database.utils import generate_content_hash
 from src.utils import get_session
-from src.db_models import Bazel
+from src.database.models import Bazel
 
 logger = logging.getLogger(__name__)
-
-
-# CRUD ( We only need add, get and list basically since we will never delete a bazel!)
-def generate_content_hash(content: str) -> str:
-    """Generate the content hash for a bazel
-
-    Args:
-        content (str): Content to be hashed
-
-    Returns:
-        str: The hashed content
-    """
-    # Generate content hash
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 def add(bazel_content: str, session: Session) -> int:

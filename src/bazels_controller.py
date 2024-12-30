@@ -1,7 +1,9 @@
 """Controller module for bazels"""
 
+import asyncio
 import json
 import logging
+from pathlib import Path
 import random
 import os
 
@@ -10,9 +12,11 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from sqlalchemy.orm import Session
 
-from src import bazels_repo
-from src.utils import get_session, get_llm
-from src.custom_types import BazelModel, BazelType
+from src.database import db_functions
+from src import bazels_image_generation
+from src.prompt import SYSTEM_PROMPT_IMAGE_GENERATION
+from src.utils import create_image_save_path_from_bazel, get_session, get_llm
+from src.custom_types import BazelImageDescriptionModel, BazelModel, BazelType
 
 
 logger = logging.getLogger(__name__)
@@ -20,6 +24,9 @@ logger = logging.getLogger(__name__)
 # Load in .env variables
 load_dotenv()
 LLM = os.getenv("LLM")
+BAZEL_IMAGE_WIDTH = int(os.getenv("BAZEL_IMAGE_WIDTH"))
+BAZEL_IMAGE_HEIGHT = int(os.getenv("BAZEL_IMAGE_HEIGHT"))
+BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
 MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
 MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
 
@@ -39,13 +46,13 @@ def populate_database(messages: list[Message], session: Session = get_session())
     added_bazels = 0
 
     # Check if db needs to be populated
-    if bazels_repo.count(session) == len(messages):
+    if db_functions.count(session) == len(messages):
         logger.info("Database already populated")
         return added_bazels
     # Add the bazels
     for message in messages:
         try:
-            result = bazels_repo.add(message.content, session)
+            result = db_functions.add(message.content, session)
 
             if result == 1:
                 added_bazels += 1
@@ -56,10 +63,11 @@ def populate_database(messages: list[Message], session: Session = get_session())
     return added_bazels
 
 
-def generate_bazel(
+async def generate_bazel(
     nr_bazels: int = 10,
     user_context: str = "",
     bazel_type: BazelType = BazelType.NORMAL,
+    generate_image: bool = False,
     session: Session = get_session(),
 ) -> BazelModel:
     """Generate a bazel
@@ -68,6 +76,7 @@ def generate_bazel(
         nr_bazels (int, optional): Number of bazels to be taken as context. Defaults to 10.
         user_context (str, optional): The user context when a custom bazel is requested. Defaults to "".
         bazel_type (BazelType, optional): Bazel type. Defaults to BazelType.NORMAL.
+        generate_image (bool, optional): Determines if an image will be generated for the Bazel. Defaults to False.
         session (Session, optional): The session. Defaults to get_session().
 
     Returns:
@@ -93,12 +102,82 @@ def generate_bazel(
 
         # Load new bazel in the pydantic Model
         new_bazel = BazelModel(**json.loads(response.text))
-
         logger.info("Bazel successfully generated!")
+
+        # Generate image of the bazel if needed
+        if generate_image:
+            task = asyncio.create_task(
+                generate_image_for_bazel(bazel_english=new_bazel.text_english)
+            )
+            await task
+            # generate_image_for_bazel(bazel_english=new_bazel.text_english)
         return new_bazel
     except Exception as exc:
         logger.error(f"Bazel could not be generated: {exc}")
         raise ValueError(f"Bazel could not be generated: {exc}") from exc
+
+
+async def generate_image_for_bazel(bazel_english: str, retries=2):
+    """Generate an image for the given bazel.
+
+    Args:
+        bazel_english (int): The bazel in English.
+        retries (int, optional): Number of times we can retry to generate the bazel image. Defaults to 3.
+    """
+    logger.info(f"Generating image for bazel: {bazel_english}...")
+
+    # Transfer bazel into image description
+    llm = get_llm(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
+
+    generation_config = genai.GenerationConfig(
+        response_mime_type="application/json",
+        response_schema=BazelImageDescriptionModel,
+    )
+
+    prompt = f"""
+        Generate a detailed description for the image generation for this sentence: {bazel_english}
+        """
+    response = llm.generate_content(prompt, generation_config=generation_config)
+
+    new_bazel_image_description = BazelImageDescriptionModel(
+        **json.loads(response.text)
+    )
+    logger.info(f"Bazel description: {new_bazel_image_description.description}")
+
+    # Initialize the image model
+    model_obj = bazels_image_generation.ImageModel(
+        model="evil",
+        seed="random",
+        width=BAZEL_IMAGE_WIDTH,
+        height=BAZEL_IMAGE_HEIGHT,
+    )
+
+    # Make sure the directory exists
+    bazel_image_dir = Path(BAZEL_IMAGE_SAVE_PATH)
+    if not bazel_image_dir.exists():
+        bazel_image_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create image save path
+    bazel_image_save_path = create_image_save_path_from_bazel(bazel_english)
+
+    # Generate bazel image and save it locally
+    for attempt in range(retries):
+        try:
+            await model_obj.generate(
+                prompt=new_bazel_image_description.description,
+                save=True,
+                file=str(bazel_image_save_path),
+            )
+            logger.info("Bazel image successfully generated!")
+            return
+        except Exception as e:
+            if attempt == retries - 1:
+                logger.error(f"Error generating the bazel image: {e}")
+                raise e
+            else:
+                logger.info(
+                    f"Something went wrong when generating the bazel image: {e}. Retrying..."
+                )
 
 
 def generate_bazel_context(
@@ -123,7 +202,7 @@ def generate_bazel_context(
 
     try:
         # Get bazels
-        bazels = bazels_repo.list(session=session)
+        bazels = db_functions.list(session=session)
 
         # Sample 'nr_bazels' (default 10) random bazels
         nr_bazels = min(nr_bazels, len(bazels) - 1)

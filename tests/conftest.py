@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, delete
 
-from src.db_models import Bazel
+from src.database.models import Bazel
 
 load_dotenv()
 

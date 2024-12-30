@@ -16,9 +16,13 @@ alembic = "^1.13.1"
 psycopg2-binary = "^2.9.9"
 pylint = "^3.2.0"
 google-generativeai = "^0.8.3"
-pyyaml = "^6.0.2"
+pyyaml = "6.0.1"
 black = "^24.10.0"
 ruff = "^0.8.4"
+pillow = "^11.0.0"
+pre-commit = "^4.0.1"
+aiohttp = "^3.11.11"
+pytest-asyncio = "^0.25.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -30,5 +34,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 markers = [
-    "llm: Tests where we need the LLM.",
+    "llm: Tests where we need communication with one or multiple LLMs.",
 ]

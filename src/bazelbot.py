@@ -9,9 +9,9 @@ from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
 from src import bazels_controller
-from src import bazels_repo
+from src.database import db_functions
 from src.custom_types import BazelType
-from src.utils import configure_logging
+from src.utils import configure_logging, create_image_save_path_from_bazel
 
 # Load in .env variables
 load_dotenv()
@@ -72,8 +72,12 @@ Hier zijn de commando's die je kan gebruiken:
    : _Lijst van hulpcommando's._
 - `/bazel`
    : _Genereer een bazel._
-- `/custom_bazel <context>`
+- `/bazel_pic`
+   : _Genereer een bazel tesamen met een afbeelding van die bazel._
+- `/cumstom_bazel <context>`
    : _Genereer een bazel die de gegeven context bevat._
+- `/cumstom_bazel_pic <context>`
+   : _Genereer een bazel die de gegeven context bevat, tesamen met een afbeelding van die bazel._
 - `/update_bazels`
    : _Update de bazels in de database._
 
@@ -100,7 +104,7 @@ async def bazel(ctx):
     """Generate a bazel"""
     # Generate the bazel
     try:
-        new_bazel = bazels_controller.generate_bazel()
+        new_bazel = await bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
         await ctx.send(new_bazel.text)
@@ -113,15 +117,71 @@ async def bazel(ctx):
 @bot.command(name="cumstom_bazel")
 @cooldown(1, RATE_LIMIT, BucketType.user)
 async def custom_bazel(ctx, *, user_context):
-    """Usage: !cumstom_bazel <type_your_input_here>"""
+    """Generate custom bazel."""
     # Generate custom bazel
     try:
-        new_custom_bazel = bazels_controller.generate_bazel(
+        new_custom_bazel = await bazels_controller.generate_bazel(
             user_context=user_context, bazel_type=BazelType.CUSTOM
         )
 
         # Return the answer to the discord channel
         await ctx.send(new_custom_bazel.text)
+    except Exception as exc:
+        # Provide error logging
+        logger.error(f"Something went wrong while generating the custom bazel: {exc}")
+        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+
+
+@bot.command(name="bazel_pic")
+@cooldown(1, RATE_LIMIT, BucketType.user)
+async def bazel_with_image(ctx):
+    """Generate a bazel with image."""
+    # Generate the bazel
+    try:
+        new_bazel = await bazels_controller.generate_bazel(generate_image=True)
+
+        # Return the answer to the discord channel
+        await ctx.send(new_bazel.text)
+
+        # Send image to discord
+        bazel_image_save_path = create_image_save_path_from_bazel(
+            new_bazel.text_english
+        )
+
+        await ctx.send(file=discord.File(bazel_image_save_path))
+
+        # Delete image locally
+        bazel_image_save_path.unlink()
+    except Exception as exc:
+        # Provide error logging
+        logger.error(f"Something went wrong while generating the bazel: {exc}")
+        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+
+
+@bot.command(name="cumstom_bazel_pic")
+@cooldown(1, RATE_LIMIT, BucketType.user)
+async def custom_bazel_with_image(ctx, *, user_context):
+    """Generate custom bazel with image."""
+    # Generate custom bazel
+    try:
+        new_custom_bazel = await bazels_controller.generate_bazel(
+            generate_image=True,
+            user_context=user_context,
+            bazel_type=BazelType.CUSTOM,
+        )
+
+        # Return the answer to the discord channel
+        await ctx.send(new_custom_bazel.text)
+
+        # Send image to discord
+        bazel_image_save_path = create_image_save_path_from_bazel(
+            new_custom_bazel.text_english
+        )
+
+        await ctx.send(file=discord.File(bazel_image_save_path))
+
+        # Delete image locally
+        bazel_image_save_path.unlink()
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")
@@ -141,7 +201,7 @@ async def update_bazel(ctx):
         amount_of_bazels = bazels_controller.populate_database(messages)
 
         await ctx.send(
-            f"Added {amount_of_bazels} bazels, there are now {bazels_repo.count()} bazels stored"
+            f"Added {amount_of_bazels} bazels, there are now {db_functions.count()} bazels stored"
         )
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
