@@ -13,12 +13,13 @@ BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
 
 
 @pytest.mark.llm
-def test_generate_normal_bazel(setup_database):
+@pytest.mark.asyncio
+async def test_generate_normal_bazel(setup_database):
     # Get test session
     session = setup_database
 
     # Generate normal bazel
-    bazel = bazels_controller.generate_bazel(session=session)
+    bazel = await bazels_controller.generate_bazel(session=session)
     print(bazel)
 
     # Check
@@ -33,13 +34,14 @@ def test_generate_normal_bazel(setup_database):
 
 
 @pytest.mark.llm
-def test_generate_custom_bazel(setup_database):
+@pytest.mark.asyncio
+async def test_generate_custom_bazel(setup_database):
     # Get test session
     session = setup_database
 
     # Generate custom bazel
     user_context = "flamingo"
-    custom_bazel = bazels_controller.generate_bazel(
+    custom_bazel = await bazels_controller.generate_bazel(
         user_context=user_context, bazel_type=BazelType.CUSTOM, session=session
     )
     print(custom_bazel)
@@ -59,12 +61,13 @@ def test_generate_custom_bazel(setup_database):
 
 
 @pytest.mark.llm
-def test_generate_bazel_with_image(setup_database):
+@pytest.mark.asyncio
+async def test_generate_bazel_with_image(setup_database):
     # Get test session
     session = setup_database
 
     # Generate normal bazel
-    bazel = bazels_controller.generate_bazel(generate_image=True, session=session)
+    bazel = await bazels_controller.generate_bazel(generate_image=True, session=session)
     print(bazel)
 
     # Check

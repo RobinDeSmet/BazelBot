@@ -1,5 +1,6 @@
 """Controller module for bazels"""
 
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -62,7 +63,7 @@ def populate_database(messages: list[Message], session: Session = get_session())
     return added_bazels
 
 
-def generate_bazel(
+async def generate_bazel(
     nr_bazels: int = 10,
     user_context: str = "",
     bazel_type: BazelType = BazelType.NORMAL,
@@ -105,14 +106,18 @@ def generate_bazel(
 
         # Generate image of the bazel if needed
         if generate_image:
-            generate_image_for_bazel(bazel_english=new_bazel.text_english)
+            task = asyncio.create_task(
+                generate_image_for_bazel(bazel_english=new_bazel.text_english)
+            )
+            await task
+            # generate_image_for_bazel(bazel_english=new_bazel.text_english)
         return new_bazel
     except Exception as exc:
         logger.error(f"Bazel could not be generated: {exc}")
         raise ValueError(f"Bazel could not be generated: {exc}") from exc
 
 
-def generate_image_for_bazel(bazel_english: str, retries=2):
+async def generate_image_for_bazel(bazel_english: str, retries=2):
     """Generate an image for the given bazel.
 
     Args:
@@ -158,7 +163,7 @@ def generate_image_for_bazel(bazel_english: str, retries=2):
     # Generate bazel image and save it locally
     for attempt in range(retries):
         try:
-            model_obj.generate(
+            await model_obj.generate(
                 prompt=new_bazel_image_description.description,
                 save=True,
                 file=str(bazel_image_save_path),

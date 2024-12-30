@@ -1,6 +1,5 @@
 """Module for the bazelbot"""
 
-# TODO: Fix async issues with the bot: https://chatgpt.com/c/6771c544-fe7c-8012-a46a-1f142533db79
 import os
 import logging
 import discord
@@ -105,7 +104,7 @@ async def bazel(ctx):
     """Generate a bazel"""
     # Generate the bazel
     try:
-        new_bazel = bazels_controller.generate_bazel()
+        new_bazel = await bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
         await ctx.send(new_bazel.text)
@@ -121,7 +120,7 @@ async def custom_bazel(ctx, *, user_context):
     """Generate custom bazel."""
     # Generate custom bazel
     try:
-        new_custom_bazel = bazels_controller.generate_bazel(
+        new_custom_bazel = await bazels_controller.generate_bazel(
             user_context=user_context, bazel_type=BazelType.CUSTOM
         )
 
@@ -134,12 +133,12 @@ async def custom_bazel(ctx, *, user_context):
 
 
 @bot.command(name="bazel_pic")
-@cooldown(1, 6 * RATE_LIMIT, BucketType.user)
+@cooldown(1, RATE_LIMIT, BucketType.user)
 async def bazel_with_image(ctx):
     """Generate a bazel with image."""
     # Generate the bazel
     try:
-        new_bazel = bazels_controller.generate_bazel(generate_image=True)
+        new_bazel = await bazels_controller.generate_bazel(generate_image=True)
 
         # Return the answer to the discord channel
         await ctx.send(new_bazel.text)
@@ -160,13 +159,15 @@ async def bazel_with_image(ctx):
 
 
 @bot.command(name="cumstom_bazel_pic")
-@cooldown(1, 6 * RATE_LIMIT, BucketType.user)
+@cooldown(1, RATE_LIMIT, BucketType.user)
 async def custom_bazel_with_image(ctx, *, user_context):
     """Generate custom bazel with image."""
     # Generate custom bazel
     try:
-        new_custom_bazel = bazels_controller.generate_bazel(
-            generate_image=True, user_context=user_context, bazel_type=BazelType.CUSTOM
+        new_custom_bazel = await bazels_controller.generate_bazel(
+            generate_image=True,
+            user_context=user_context,
+            bazel_type=BazelType.CUSTOM,
         )
 
         # Return the answer to the discord channel
