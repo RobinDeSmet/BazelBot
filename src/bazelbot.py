@@ -8,10 +8,10 @@ from discord.ext import commands
 from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
-from src import bazels_controller
-from src.database import db_functions
-from src.custom_types import BazelType
-from src.utils import configure_logging, create_image_save_path_from_bazel
+from src.controllers import bazels_controller
+from src.database import bazels_db_functions
+from src.utils.custom_types import BazelType
+from src.utils.functions import configure_logging, create_image_save_path_from_bazel
 
 # Load in .env variables
 load_dotenv()
@@ -201,7 +201,7 @@ async def update_bazel(ctx):
         amount_of_bazels = bazels_controller.populate_database(messages)
 
         await ctx.send(
-            f"Added {amount_of_bazels} bazels, there are now {db_functions.count()} bazels stored"
+            f"Added {amount_of_bazels} bazels, there are now {bazels_db_functions.count()} bazels stored"
         )
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")

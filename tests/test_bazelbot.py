@@ -1,6 +1,6 @@
-from src.database import db_functions
+from src.database import bazels_db_functions
 from src.database.models import Bazel
-from src import bazels_controller
+from src.controllers import bazels_controller
 from tests.conftest import TOTAL_NR_BAZELS, MAX_BAZELS_IN_CONTEXT
 
 
@@ -53,27 +53,29 @@ def test_bazel_crud_works(setup_database):
     bazel_content = "New bazel that has to be added!!"
 
     # Add bazel
-    result = db_functions.add(bazel_content, session)
+    result = bazels_db_functions.add(bazel_content, session)
 
     assert result == 1
 
     # Add duplicate bazel
-    result = db_functions.add(bazel_content, session)
+    result = bazels_db_functions.add(bazel_content, session)
 
     assert result == 0
 
     # Retrieve bazel
-    bazel = db_functions.get(bazel_content, session)
+    bazel = bazels_db_functions.get(bazel_content, session)
 
-    assert bazel.content_hash == db_functions.generate_content_hash(bazel_content)
+    assert bazel.content_hash == bazels_db_functions.generate_content_hash(
+        bazel_content
+    )
 
     # List bazels
-    bazels = db_functions.list(session)
+    bazels = bazels_db_functions.list(session)
 
     assert len(bazels) == TOTAL_NR_BAZELS + 1
 
     # Cleanup
-    db_functions.delete(bazel_content, session)
+    bazels_db_functions.delete(bazel_content, session)
 
     # Check if bazel is successfully deleted
-    assert db_functions.count(session) == TOTAL_NR_BAZELS
+    assert bazels_db_functions.count(session) == TOTAL_NR_BAZELS

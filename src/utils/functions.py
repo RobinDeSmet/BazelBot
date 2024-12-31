@@ -10,7 +10,7 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from src.prompt import SYSTEM_PROMPT
+from src.prompts.system import SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 

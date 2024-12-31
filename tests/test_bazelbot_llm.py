@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
-from src import bazels_controller
-from src.custom_types import BazelType
+from src.controllers import bazels_controller
+from src.utils.custom_types import BazelType
 import pytest
 
-from src.utils import create_image_save_path_from_bazel
+from src.utils.functions import create_image_save_path_from_bazel
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
