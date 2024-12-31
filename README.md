@@ -20,7 +20,7 @@ The following environment variables need to be configured for the application to
 | Variable Name              | Description                                                                                 | Default Value                                       |
 |----------------------------|---------------------------------------------------------------------------------------------|--------------------------------------------------|
 | `BOT_TOKEN`                | Discord bot token for authentication.                                                      | `YOUR_BOT_TOKEN`                                 |
-| `CHANNEL_ID`               | Discord channel ID to pull messages for generating gibberish.                              | `313397112777867264`                             |
+| `CHANNEL_ID`               | Discord channel ID to pull messages for generating gibberish.                              | `YOUR_CHANNEL_ID`                             |
 | `DB_CONNECTION_URL`        | Database connection URL for connecting to the PostgreSQL database.                         | `postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db` |
 | `MAX_BAZEL_LENGTH`         | Maximum length of a bazel (in words).                                                      | `25`                                             |
 | `MESSAGE_LIMIT`            | Number of messages to pull from the channel.                                               | `10000`                                          |
