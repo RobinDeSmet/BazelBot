@@ -10,6 +10,7 @@ import os
 from discord import Message
 from dotenv import load_dotenv
 import google.generativeai as genai
+from google.api_core.exceptions import ResourceExhausted
 from sqlalchemy.orm import Session
 
 from src.database import bazels_db_functions
@@ -135,6 +136,12 @@ async def generate_bazel(
             task = asyncio.create_task(generate_image_for_bazel(bazel=new_bazel))
             await task
         return new_bazel
+    except ResourceExhausted as exc:
+        logger.error("Quota exceeded. Please try again later.")
+        raise ValueError(
+            "Quota exceeded (10 requests/min, 1500 requests/day). "
+            "Please retry after you waited at least 1 minute."
+        ) from exc
     except Exception as exc:
         logger.error(f"Bazel could not be generated: {exc}")
         raise ValueError(f"Bazel could not be generated: {exc}") from exc
@@ -343,3 +350,31 @@ def format_prompt(
 
     logger.info(f"Prompt successfully formatted: {prompt}")
     return prompt
+
+
+def format_answer(
+    bazel: BazelModel,
+) -> str:
+    """Format the answer based on the generated bazel.
+
+    Args:
+        bazel (BazelModel): The bazel model.
+
+    Returns:
+        str: The formatted answer
+    """
+    logger.info("Formatting the answer...")
+    answer = f"""
+    # 🧩 BAZEL RESULTS
+
+    ** 🎭 Bazel:**
+    ```
+    {bazel.text}
+    ```
+
+    ### 📋 Flavour Details:
+    - **Flavour:** {bazel.bazel_flavour.bazel_flavour_name}
+    - **Image Flavour:** {bazel.bazel_flavour.image_flavour_name}
+    """
+    logger.info("Answer successfully formatted.")
+    return answer

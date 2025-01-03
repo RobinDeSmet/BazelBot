@@ -97,6 +97,7 @@ Hier zijn de commando's die je kan gebruiken:
     await ctx.send(help_message)
 
 
+# TODO: bazel output: add flavours
 # Core commands
 @bot.command(name="bazel")
 @cooldown(1, RATE_LIMIT, BucketType.user)

@@ -17,7 +17,7 @@ SYSTEM_PROMPT_IMAGE_GENERATION = """
 You will be provided with an English sentence. Your goal is to convert that sentence into a detailed description of an image.
 
 ## Instructions
-- Only include the description in your answer and nothing else.
+- Only include the image description in your answer and nothing else.
 - Make sure to make the description as detailed as possible and create a fitting setting.
 - If you do not follow these instruction, your task fails!
 """

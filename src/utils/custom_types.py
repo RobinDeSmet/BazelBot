@@ -12,17 +12,19 @@ class BazelType(Enum):
 
 
 class BazelFlavour(BaseModel):
-    bazel_flavour_name: str = Field(..., description="The name of the bazel flavour.")
+    bazel_flavour_name: str = Field(
+        ..., description="The name of the bazel text flavour."
+    )
     bazel_instructions: str = Field(
         ...,
-        description="The instructions that need to be added to the prompt to use this bazel flavour",
-    )
-    image_instructions: str = Field(
-        ...,
-        description="The instructions that need to be added to the prompt to use this bazel flavour",
+        description="The instructions that need to be added to the prompt to use this bazel text flavour",
     )
     image_flavour_name: str = Field(
         ..., description="The name of the bazel image flavour."
+    )
+    image_instructions: str = Field(
+        ...,
+        description="The instructions that need to be added to the prompt to use this bazel image flavour",
     )
 
     def __str__(self):

@@ -67,7 +67,7 @@ async def test_generate_bazel_with_image(setup_database):
     # Get test session
     session = setup_database
 
-    for _ in range(10):
+    for _ in range(20):
         # Generate normal bazel
         bazel = await bazels_controller.generate_bazel(
             generate_image=True, session=session
@@ -85,4 +85,4 @@ async def test_generate_bazel_with_image(setup_database):
         assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()
 
         # Sleep to not overstep the rate limit (10 requests/min)
-        time.sleep(5)
+        time.sleep(30)
