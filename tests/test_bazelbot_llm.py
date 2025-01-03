@@ -1,10 +1,11 @@
 import os
+import time
 from dotenv import load_dotenv
-from src import bazels_controller
-from src.custom_types import BazelType
+from src.controllers import bazels_controller
+from src.utils.custom_types import BazelType
 import pytest
 
-from src.utils import create_image_save_path_from_bazel
+from src.utils.functions import create_image_save_path_from_bazel
 
 load_dotenv()
 DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
@@ -66,16 +67,22 @@ async def test_generate_bazel_with_image(setup_database):
     # Get test session
     session = setup_database
 
-    # Generate normal bazel
-    bazel = await bazels_controller.generate_bazel(generate_image=True, session=session)
-    print(bazel)
+    for _ in range(20):
+        # Generate normal bazel
+        bazel = await bazels_controller.generate_bazel(
+            generate_image=True, session=session
+        )
+        print(bazel)
 
-    # Check
-    assert bazel
-    assert (
-        len(bazel.text.split(" ")) <= MAX_BAZEL_LENGTH
-    )  # Bazel should not be too long
+        # Check
+        assert bazel
+        assert (
+            len(bazel.text.split(" ")) <= MAX_BAZEL_LENGTH
+        )  # Bazel should not be too long
 
-    # Check if the file exists
-    bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
-    assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()
+        # Check if the file exists
+        bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
+        assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()
+
+        # Sleep to not overstep the rate limit (10 requests/min)
+        time.sleep(30)

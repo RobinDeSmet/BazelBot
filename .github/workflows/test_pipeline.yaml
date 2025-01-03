@@ -15,7 +15,7 @@ jobs:
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
           echo "CHANNEL_ID=313397112777867264" >> .env
           echo "DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db" >> .env
-          echo "MAX_BAZEL_LENGTH=25" >> .env
+          echo "MAX_BAZEL_LENGTH=30" >> .env
           echo "MESSAGE_LIMIT=10000" >> .env
           echo "RATE_LIMIT=10" >> .env
           echo "MAX_BAZELS_IN_CONTEXT=25" >> .env

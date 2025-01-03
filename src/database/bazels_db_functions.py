@@ -6,7 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.database.utils import generate_content_hash
-from src.utils import get_session
+from src.utils.functions import get_session
 from src.database.models import Bazel
 
 logger = logging.getLogger(__name__)
