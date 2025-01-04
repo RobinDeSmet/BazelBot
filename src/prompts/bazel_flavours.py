@@ -32,7 +32,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "caveman": {
-        "weight": 2,
+        "weight": 5,
         "bazel_instructions": """
             - Maak de bazel alsof je een oermens zou zijn.
             - Gebruik woorden zoals: "oogah boogah", "boem boem",...
@@ -53,7 +53,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "death": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je op sterven ligt en je moet nog iets belangrijk zeggen.
         """,
@@ -87,7 +87,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "gay": {
-        "weight": 3,
+        "weight": 2,
         "bazel_instructions": """
             - Maak de bazel alsof je homoseksueel bent.
             - Voeg "Jules" toe aan de bazel.
@@ -139,7 +139,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": "- Deze bazel is uitgesproken door een piraat. Zorg voor een passende setting!",
     },
     "psychotic": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je een psychopaat bent.
         """,
@@ -151,7 +151,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "romantic": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je iemand aan het versieren bent.
         """,
@@ -183,7 +183,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "stoned": {
-        "weight": 2,
+        "weight": 5,
         "bazel_instructions": "- Maak de bazel alsof je helemaal high bent.",
         "image_instructions": """
             - Moet heel trippy zijn alsof je aan het hallucineren bent.
@@ -191,7 +191,7 @@ BAZEL_FLAVOURS = {
         """,
     },
     "stoned_random": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je helemaal high bent.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -236,7 +236,7 @@ BAZEL_IMAGE_FLAVOURS = {
         "instructions": "- Generate a distopian, depressing, overly sad setting for this bazel.",
     },
     "default": {
-        "weight": 50,
+        "weight": 20,
         "instructions": " ",
     },
     "futuristic": {
@@ -293,7 +293,7 @@ BAZEL_IMAGE_FLAVOURS = {
         """,
     },
     "nightmare": {
-        "weight": 2,
+        "weight": 1,
         "instructions": """
             - This image should be nightmare fuel.
             - Add scary, messed up, disturbing elements to the setting.

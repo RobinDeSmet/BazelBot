@@ -75,32 +75,36 @@ async def test_generate_bazel_with_image(setup_database):
     # Get test session
     session = setup_database
 
-    # Generate normal bazel
-    bazel = await bazels_controller.generate_bazel(generate_image=True, session=session)
+    # Create 3 test samples
+    for _ in range(3):
+        # Generate normal bazel
+        bazel = await bazels_controller.generate_bazel(
+            generate_image=True, session=session
+        )
 
-    formatted_bazel = bazels_controller.format_answer(bazel, full_info=True)
+        formatted_bazel = bazels_controller.format_answer(bazel, full_info=True)
 
-    assert bazel.image_description in formatted_bazel
-    assert bazel.bazel_flavour.bazel_flavour_name in formatted_bazel
-    assert bazel.bazel_flavour.image_flavour_name in formatted_bazel
+        assert bazel.image_description in formatted_bazel
+        assert bazel.bazel_flavour.bazel_flavour_name in formatted_bazel
+        assert bazel.bazel_flavour.image_flavour_name in formatted_bazel
 
-    print(bazel)
+        print(bazel)
 
-    # Check
-    assert bazel
-    assert (
-        len(bazel.text.split(" ")) <= MAX_BAZEL_LENGTH
-    )  # Bazel should not be too long
+        # Check
+        assert bazel
+        assert (
+            len(bazel.text.split(" ")) <= MAX_BAZEL_LENGTH
+        )  # Bazel should not be too long
 
-    # Check if the file exists
-    bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
-    assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()
+        # Check if the file exists
+        bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
+        assert bazel_image_save_path.exists() and bazel_image_save_path.is_file()
 
-    # Write bazel to file
-    bazel_text_file = f"{str(bazel_image_save_path).split('.png')[0]}.txt"
-    with open(bazel_text_file, "w") as f:
-        f.write(f"{bazel}")
-        f.write(f"Image description:\n{bazel.image_description}")
+        # Write bazel to file
+        bazel_text_file = f"{str(bazel_image_save_path).split('.png')[0]}.txt"
+        with open(bazel_text_file, "w") as f:
+            f.write(f"{bazel}")
+            f.write(f"Image description:\n{bazel.image_description}")
 
-    # Sleep to not overstep the rate limit (10 requests/min)
-    time.sleep(15)
+        # Sleep to not overstep the rate limit (10 requests/min)
+        time.sleep(15)

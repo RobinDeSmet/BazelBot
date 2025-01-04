@@ -1,5 +1,3 @@
-"""Controller module for bazels"""
-
 import asyncio
 import json
 import logging
@@ -368,7 +366,9 @@ def format_answer(bazel: BazelModel, full_info=False) -> str:
     """
     logger.info("Formatting the answer...")
 
-    formatted_bazel_text = "\n".join([f"## {line}" for line in bazel.text.splitlines()])
+    formatted_bazel_text = "\n".join(
+        [f"## {line}\n" for line in bazel.text.splitlines()]
+    )
 
     if full_info:
         answer = f"""
