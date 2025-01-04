@@ -23,7 +23,7 @@ jobs:
           echo "GEMINI_MODEL=gemini-2.0-flash-exp" >> .env
           echo "BAZEL_IMAGE_WIDTH=350" >> .env
           echo "BAZEL_IMAGE_HEIGHT=350" >> .env
-          echo "BAZEL_IMAGE_SAVE_PATH=src/data" >> .env
+          echo "BAZEL_IMAGE_SAVE_PATH=data" >> .env
       - name: Install Python and Poetry
         uses: actions/setup-python@v3
         with:

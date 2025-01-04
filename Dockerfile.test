@@ -35,10 +35,10 @@ RUN poetry install --no-root --only main && rm -rf ${POETRY_CACHE_DIR}
 ENV $(cat .env)
 
 # Create the directory and set ownership and permissions
-RUN mkdir -p ${HOME}/src/data && \
-    chown -R appuser:appuser ${HOME}/src/data && \
-    chmod -R u+w ${HOME}/src/data && \
-    chmod g+s ${HOME}/src/data
+RUN mkdir -p ${HOME}/data && \
+    chown -R appuser:appuser ${HOME}/data && \
+    chmod -R u+w ${HOME}/data && \
+    chmod g+s ${HOME}/data
 
 USER appuser
 
