@@ -1,5 +1,3 @@
-"Module to generate images for bazels."
-
 import logging
 import random
 import aiohttp

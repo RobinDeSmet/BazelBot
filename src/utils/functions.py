@@ -1,6 +1,5 @@
-"Module to centralize the util function for the app"
-
 from datetime import datetime
+import hashlib
 import logging
 import os
 from pathlib import Path
@@ -10,7 +9,7 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from src.prompt import SYSTEM_PROMPT
+from src.prompts.system import SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +76,19 @@ def get_llm(
     )
 
     return llm
+
+
+def generate_content_hash(content: str) -> str:
+    """Generate the content hash for a bazel
+
+    Args:
+        content (str): Content to be hashed
+
+    Returns:
+        str: The hashed content
+    """
+    # Generate content hash
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 def create_image_save_path_from_bazel(bazel: str) -> Path:

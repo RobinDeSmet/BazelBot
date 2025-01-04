@@ -20,9 +20,9 @@ The following environment variables need to be configured for the application to
 | Variable Name              | Description                                                                                 | Default Value                                       |
 |----------------------------|---------------------------------------------------------------------------------------------|--------------------------------------------------|
 | `BOT_TOKEN`                | Discord bot token for authentication.                                                      | `YOUR_BOT_TOKEN`                                 |
-| `CHANNEL_ID`               | Discord channel ID to pull messages for generating gibberish.                              | `313397112777867264`                             |
+| `CHANNEL_ID`               | Discord channel ID to pull messages for generating gibberish.                              | `YOUR_CHANNEL_ID`                             |
 | `DB_CONNECTION_URL`        | Database connection URL for connecting to the PostgreSQL database.                         | `postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db` |
-| `MAX_BAZEL_LENGTH`         | Maximum length of a bazel (in words).                                                      | `25`                                             |
+| `MAX_BAZEL_LENGTH`         | Maximum length of a bazel (in words).                                                      | `30`                                             |
 | `MESSAGE_LIMIT`            | Number of messages to pull from the channel.                                               | `10000`                                          |
 | `RATE_LIMIT`               | Minimum time (in seconds) between bazel requests by a user.                                      | `10`                                             |
 | `MAX_BAZELS_IN_CONTEXT`    | Maximum number of bazels allowed in a single context window.                                       | `25`                                             |
@@ -30,7 +30,7 @@ The following environment variables need to be configured for the application to
 | `GEMINI_MODEL`             | Gemini model.                                              | `gemini-2.0-flash-exp`                           |
 | `BAZEL_IMAGE_WIDTH`             | The width of the generated bazel image.                                              | `350`                           |
 | `BAZEL_IMAGE_HEIGHT`             | The height of the generated bazel image.                                              | `350`                           |
-| `BAZEL_IMAGE_SAVE_PATH`             | The path to the directory where the generated bazel image will be stored.                                             | `src/data`                           |
+| `BAZEL_IMAGE_SAVE_PATH`             | The path to the directory where the generated bazel image will be stored.                                             | `data`                           |
 
 
 ## Maintainers

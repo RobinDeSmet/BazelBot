@@ -11,7 +11,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./src/data:/app/src/data
+      - ./data:/app/data
   migration:
     build: .
     restart: always
@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./src/data:/app/src/data
+      - ./data:/app/data
   db:
     image: postgres
     restart: always

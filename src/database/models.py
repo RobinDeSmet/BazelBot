@@ -1,5 +1,3 @@
-"""Here we declare our db models"""
-
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, DateTime, String, Integer, func
 

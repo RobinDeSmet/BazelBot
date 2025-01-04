@@ -12,7 +12,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./src/data:/app/src/data
+      - ./data:/app/data
   db:
     image: postgres
     user: postgres

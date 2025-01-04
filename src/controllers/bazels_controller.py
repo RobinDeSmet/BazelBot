@@ -1,5 +1,3 @@
-"""Controller module for bazels"""
-
 import asyncio
 import json
 import logging
@@ -10,13 +8,24 @@ import os
 from discord import Message
 from dotenv import load_dotenv
 import google.generativeai as genai
+from google.api_core.exceptions import ResourceExhausted
 from sqlalchemy.orm import Session
 
-from src.database import db_functions
-from src import bazels_image_generation
-from src.prompt import SYSTEM_PROMPT_IMAGE_GENERATION
-from src.utils import create_image_save_path_from_bazel, get_session, get_llm
-from src.custom_types import BazelImageDescriptionModel, BazelModel, BazelType
+from src.database import bazels_db_functions
+from src.controllers import image_generation
+from src.prompts.bazel_flavours import (
+    BAZEL_IMAGE_FLAVOURS,
+    BAZEL_FLAVOURS,
+)
+from src.prompts.system import SYSTEM_PROMPT_IMAGE_GENERATION
+from src.utils.functions import create_image_save_path_from_bazel, get_session, get_llm
+from src.utils.custom_types import (
+    BazelFlavour,
+    BazelGenerationIntermediateModel,
+    BazelImageDescriptionModel,
+    BazelModel,
+    BazelType,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +44,7 @@ def populate_database(messages: list[Message], session: Session = get_session())
     """Populating the database with new messages
 
     Args:
-        messages (list[Message]): List of messages from a channel (.env)
+        messages (list[Message]): List of messages from a discord channel.
         session (Session, optional): The session. Defaults to get_session().
 
     Returns:
@@ -46,13 +55,13 @@ def populate_database(messages: list[Message], session: Session = get_session())
     added_bazels = 0
 
     # Check if db needs to be populated
-    if db_functions.count(session) == len(messages):
+    if bazels_db_functions.count(session) == len(messages):
         logger.info("Database already populated")
         return added_bazels
     # Add the bazels
     for message in messages:
         try:
-            result = db_functions.add(message.content, session)
+            result = bazels_db_functions.add(message.content, session)
 
             if result == 1:
                 added_bazels += 1
@@ -87,44 +96,66 @@ async def generate_bazel(
         # Get bazel context
         bazel_context = generate_bazel_context(nr_bazels=nr_bazels, session=session)
 
+        # Get random text bazel flavour
+        bazel_flavour = get_random_bazel_flavour()
+
         # Formatting user prompt
         prompt = format_prompt(
-            context=bazel_context, bazel_type=bazel_type, user_context=user_context
+            context=bazel_context,
+            bazel_flavour=bazel_flavour,
+            bazel_type=bazel_type,
+            user_context=user_context,
         )
 
         # Generate bazel
         generation_config = genai.GenerationConfig(
-            response_mime_type="application/json", response_schema=BazelModel
+            response_mime_type="application/json",
+            response_schema=BazelGenerationIntermediateModel,
         )
 
         llm = get_llm()
         response = llm.generate_content(prompt, generation_config=generation_config)
 
-        # Load new bazel in the pydantic Model
-        new_bazel = BazelModel(**json.loads(response.text))
-        logger.info("Bazel successfully generated!")
+        # Load new bazel in the intermediate pydantic Model
+        new_intermediate_bazel = BazelGenerationIntermediateModel(
+            **json.loads(response.text)
+        )
+
+        # Add bazel flavour to eventual bazel
+        new_bazel = BazelModel(
+            text=new_intermediate_bazel.text,
+            text_english=new_intermediate_bazel.text_english,
+            bazel_flavour=bazel_flavour,
+            image_description="None.",
+            bazel_context=bazel_context,
+        )
 
         # Generate image of the bazel if needed
         if generate_image:
-            task = asyncio.create_task(
-                generate_image_for_bazel(bazel_english=new_bazel.text_english)
-            )
+            task = asyncio.create_task(generate_image_for_bazel(bazel=new_bazel))
             await task
-            # generate_image_for_bazel(bazel_english=new_bazel.text_english)
+
+        logger.info(f"Bazel successfully generated: {new_bazel}")
         return new_bazel
+    except ResourceExhausted as exc:
+        logger.error("Quota exceeded. Please try again later.")
+        raise ValueError(
+            "Quota exceeded (10 requests/min, 1500 requests/day). "
+            "Please retry after you waited at least 1 minute."
+        ) from exc
     except Exception as exc:
         logger.error(f"Bazel could not be generated: {exc}")
         raise ValueError(f"Bazel could not be generated: {exc}") from exc
 
 
-async def generate_image_for_bazel(bazel_english: str, retries=2):
+async def generate_image_for_bazel(bazel: BazelModel, retries=2):
     """Generate an image for the given bazel.
 
     Args:
-        bazel_english (int): The bazel in English.
+        bazel (BazelModel): The bazel in to generate an image for.
         retries (int, optional): Number of times we can retry to generate the bazel image. Defaults to 3.
     """
-    logger.info(f"Generating image for bazel: {bazel_english}...")
+    logger.info(f"Generating image for bazel: {bazel.text_english}...")
 
     # Transfer bazel into image description
     llm = get_llm(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
@@ -135,17 +166,22 @@ async def generate_image_for_bazel(bazel_english: str, retries=2):
     )
 
     prompt = f"""
-        Generate a detailed description for the image generation for this sentence: {bazel_english}
+        Generate a detailed description for the image generation for this sentence: {bazel.text_english}
+
+        ## Instructions
+        {bazel.bazel_flavour.image_instructions}
+        - If you do not follow these instructions, your task will fail!
         """
     response = llm.generate_content(prompt, generation_config=generation_config)
 
     new_bazel_image_description = BazelImageDescriptionModel(
         **json.loads(response.text)
     )
+    bazel.image_description = new_bazel_image_description.description
     logger.info(f"Bazel description: {new_bazel_image_description.description}")
 
     # Initialize the image model
-    model_obj = bazels_image_generation.ImageModel(
+    model_obj = image_generation.ImageModel(
         model="evil",
         seed="random",
         width=BAZEL_IMAGE_WIDTH,
@@ -158,7 +194,7 @@ async def generate_image_for_bazel(bazel_english: str, retries=2):
         bazel_image_dir.mkdir(parents=True, exist_ok=True)
 
     # Create image save path
-    bazel_image_save_path = create_image_save_path_from_bazel(bazel_english)
+    bazel_image_save_path = create_image_save_path_from_bazel(bazel.text_english)
 
     # Generate bazel image and save it locally
     for attempt in range(retries):
@@ -202,7 +238,7 @@ def generate_bazel_context(
 
     try:
         # Get bazels
-        bazels = db_functions.list(session=session)
+        bazels = bazels_db_functions.list(session=session)
 
         # Sample 'nr_bazels' (default 10) random bazels
         nr_bazels = min(nr_bazels, len(bazels) - 1)
@@ -220,13 +256,69 @@ def generate_bazel_context(
         raise exc
 
 
+def get_random_bazel_flavour() -> BazelFlavour:
+    """Get a random bazel flavour based on the flavour type requested.
+
+    Args:
+        bazel_flavour_type (BazelFlavourType): The type of bazel flavour.
+
+    Returns:
+        BazelFlavour: The random bazel flavour.
+    """
+    logger.info("Generating a random bazel flavour...")
+
+    # Text flavour
+    # Setup the instructions and accompanied weights lists
+    bazel_flavours = []
+    weights = []
+    for flavour, flavour_values in BAZEL_FLAVOURS.items():
+        new_bazel_flavour = BazelFlavour(
+            bazel_flavour_name=flavour,
+            bazel_instructions=flavour_values["bazel_instructions"],
+            image_instructions=flavour_values["image_instructions"],
+            image_flavour_name=flavour,
+        )
+        bazel_flavours.append(new_bazel_flavour)
+        weights.append(flavour_values["weight"])
+
+    # Pick a random flavour
+    random_flavour: BazelFlavour = random.choices(bazel_flavours, weights=weights, k=1)[
+        0
+    ]
+
+    # Image flavour
+    if random_flavour.image_instructions.lower() == "random":
+        # Setup the instructions and accompanied weights lists
+        bazel_image_instructions = []
+        weights = []
+        for flavour, flavour_values in BAZEL_IMAGE_FLAVOURS.items():
+            bazel_image_instructions.append((flavour, flavour_values["instructions"]))
+            weights.append(flavour_values["weight"])
+
+        # Pick a random flavour
+        random_image_flavour = random.choices(
+            bazel_image_instructions, weights=weights, k=1
+        )[0]
+
+        # Update the image flavour name and instructions
+        random_flavour.image_flavour_name = random_image_flavour[0]
+        random_flavour.image_instructions = random_image_flavour[1]
+
+    logger.info(f"Random flavour generated: {random_flavour}")
+    return random_flavour
+
+
 def format_prompt(
-    context: str, user_context="", bazel_type: BazelType = BazelType.NORMAL
+    context: str,
+    bazel_flavour: BazelFlavour,
+    user_context="",
+    bazel_type: BazelType = BazelType.NORMAL,
 ) -> str:
     """Format the bazel prompt
 
     Args:
-        context (str): Bazel context
+        context (str): Bazel context.
+        text_bazel_flavour (str): The flavour of the textual bazel.
         user_context (str, optional): User context for a custom bazel. Defaults to "".
         bazel_type (BazelType, optional): Bazel type. Defaults to BazelType.NORMAL.
 
@@ -234,8 +326,6 @@ def format_prompt(
         str: The prompt
     """
     logger.info(f"Formatting the prompt for bazel type: {bazel_type}...")
-
-    # TODO: add bazel flavours
     # Generate the correct prompt
     match bazel_type:
         case BazelType.NORMAL:
@@ -243,7 +333,7 @@ def format_prompt(
                 Hey Bazelbot, ik zou graag een bazel genereren aan de hand van onderstaande voorbeelden.
 
                 ## Extra instructies
-                - Maak de bazel seksueel getint.
+                {bazel_flavour.bazel_instructions}
                 - Als je niet aan deze instructies voldoet faalt je taak!
                 ## Bazel voorbeelden:
                 {context}
@@ -253,7 +343,7 @@ def format_prompt(
                 Hey Bazelbot, ik zou graag een bazel genereren aan de hand van onderstaande voorbeelden.
 
                 ## Extra instructies
-                - Maak de bazel seksueel getint.
+                {bazel_flavour.bazel_instructions}
                 - Zorg ervoor dat je dit zeker includeert in de bazel: {user_context}!
                 - Als je niet aan deze instructies voldoet faalt je taak!
                 ## Bazel voorbeelden:
@@ -262,3 +352,35 @@ def format_prompt(
 
     logger.info(f"Prompt successfully formatted: {prompt}")
     return prompt
+
+
+def format_answer(bazel: BazelModel, full_info=False) -> str:
+    """Format the answer based on the generated bazel.
+
+    Args:
+        bazel (BazelModel): The bazel model.
+        full_info (bool, Optional): If true, all the info of the bazel will be displayed. Defaults to False.
+
+    Returns:
+        str: The formatted answer.
+    """
+    logger.info("Formatting the answer...")
+
+    formatted_bazel_text = "\n".join(
+        [f"## {line}\n" for line in bazel.text.splitlines()]
+    )
+
+    if full_info:
+        answer = f"""
+        {formatted_bazel_text}
+
+        - **Bazel Flavour:** {bazel.bazel_flavour.bazel_flavour_name}
+        - **Image Flavour:** {bazel.bazel_flavour.image_flavour_name}
+        - **Image Description:** {bazel.image_description}
+        """
+    else:
+        answer = f"""
+        {formatted_bazel_text}
+        """
+    logger.info("Answer successfully formatted.")
+    return answer
