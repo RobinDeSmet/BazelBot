@@ -108,7 +108,8 @@ async def bazel(ctx):
         new_bazel = await bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
-        await ctx.send(new_bazel.text)
+        formatted_bazel = bazels_controller.format_answer(new_bazel)
+        await ctx.send(formatted_bazel)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the bazel: {exc}")
@@ -126,7 +127,8 @@ async def custom_bazel(ctx, *, user_context):
         )
 
         # Return the answer to the discord channel
-        await ctx.send(new_custom_bazel.text)
+        formatted_bazel = bazels_controller.format_answer(new_custom_bazel)
+        await ctx.send(formatted_bazel)
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")
@@ -134,7 +136,7 @@ async def custom_bazel(ctx, *, user_context):
 
 
 @bot.command(name="bazel_pic")
-@cooldown(1, RATE_LIMIT, BucketType.user)
+@cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def bazel_with_image(ctx):
     """Generate a bazel with image."""
     # Generate the bazel
@@ -142,7 +144,8 @@ async def bazel_with_image(ctx):
         new_bazel = await bazels_controller.generate_bazel(generate_image=True)
 
         # Return the answer to the discord channel
-        await ctx.send(new_bazel.text)
+        formatted_bazel = bazels_controller.format_answer(new_bazel)
+        await ctx.send(formatted_bazel)
 
         # Send image to discord
         bazel_image_save_path = create_image_save_path_from_bazel(
@@ -160,7 +163,7 @@ async def bazel_with_image(ctx):
 
 
 @bot.command(name="cumstom_bazel_pic")
-@cooldown(1, RATE_LIMIT, BucketType.user)
+@cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def custom_bazel_with_image(ctx, *, user_context):
     """Generate custom bazel with image."""
     # Generate custom bazel
@@ -172,7 +175,8 @@ async def custom_bazel_with_image(ctx, *, user_context):
         )
 
         # Return the answer to the discord channel
-        await ctx.send(new_custom_bazel.text)
+        formatted_bazel = bazels_controller.format_answer(new_custom_bazel)
+        await ctx.send(formatted_bazel)
 
         # Send image to discord
         bazel_image_save_path = create_image_save_path_from_bazel(

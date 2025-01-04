@@ -48,19 +48,19 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "curse": {
-        "weight": 2,
+        "weight": 5,
         "bazel_instructions": "- Gebruik in deze bazel scheldwoorden en vervloekingen.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "death": {
         "weight": 2,
         "bazel_instructions": """
-            - Maak de bazel alsof het je laatste woorden zijn.
+            - Maak de bazel alsof je op sterven ligt en je moet nog iets belangrijk zeggen.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "default": {
-        "weight": 10,
+        "weight": 20,
         "bazel_instructions": "- Maak de bazel seksueel getint",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -87,7 +87,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "gay": {
-        "weight": 2,
+        "weight": 3,
         "bazel_instructions": """
             - Maak de bazel alsof je homoseksueel bent.
             - Voeg "Jules" toe aan de bazel.
@@ -113,7 +113,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "nina": {
-        "weight": 1,
+        "weight": 2,
         "bazel_instructions": """
             - Maak de bazel enkel met de adjectieven: "stom" en "kut".
             - Gebruik heel eenvoudige woorden.
@@ -121,8 +121,15 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "philosophic": {
+    "pepper": {
         "weight": 2,
+        "bazel_instructions": """
+            - Gebruik "hoeeeeeer" in je bazel.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "philosophic": {
+        "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je een ruimdenkende filosoof bent.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -229,8 +236,8 @@ BAZEL_IMAGE_FLAVOURS = {
         "instructions": "- Generate a distopian, depressing, overly sad setting for this bazel.",
     },
     "default": {
-        "weight": 5,
-        "instructions": "- Include expicit or sexual content to the bazel setting.",
+        "weight": 50,
+        "instructions": " ",
     },
     "futuristic": {
         "weight": 1,

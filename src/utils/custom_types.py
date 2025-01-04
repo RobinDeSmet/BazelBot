@@ -56,6 +56,9 @@ class BazelModel(BaseModel):
         description=" The flavour of the bazel.",
     )
     text_english: str = Field(..., description="The English version of the bazel.")
+    image_description: str = Field(
+        ..., description="The detailed description of the image."
+    )
 
     def __str__(self):
         output = ""

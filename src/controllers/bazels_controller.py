@@ -128,13 +128,16 @@ async def generate_bazel(
             text=new_intermediate_bazel.text,
             text_english=new_intermediate_bazel.text_english,
             bazel_flavour=bazel_flavour,
+            image_description="None.",
+            bazel_context=bazel_context,
         )
-        logger.info("Bazel successfully generated!")
 
         # Generate image of the bazel if needed
         if generate_image:
             task = asyncio.create_task(generate_image_for_bazel(bazel=new_bazel))
             await task
+
+        logger.info(f"Bazel successfully generated: {new_bazel}")
         return new_bazel
     except ResourceExhausted as exc:
         logger.error("Quota exceeded. Please try again later.")
@@ -176,6 +179,7 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
     new_bazel_image_description = BazelImageDescriptionModel(
         **json.loads(response.text)
     )
+    bazel.image_description = new_bazel_image_description.description
     logger.info(f"Bazel description: {new_bazel_image_description.description}")
 
     # Initialize the image model
@@ -352,29 +356,31 @@ def format_prompt(
     return prompt
 
 
-def format_answer(
-    bazel: BazelModel,
-) -> str:
+def format_answer(bazel: BazelModel, full_info=False) -> str:
     """Format the answer based on the generated bazel.
 
     Args:
         bazel (BazelModel): The bazel model.
+        full_info (bool, Optional): If true, all the info of the bazel will be displayed. Defaults to False.
 
     Returns:
-        str: The formatted answer
+        str: The formatted answer.
     """
     logger.info("Formatting the answer...")
-    answer = f"""
-    # 🧩 BAZEL RESULTS
 
-    ** 🎭 Bazel:**
-    ```
-    {bazel.text}
-    ```
+    formatted_bazel_text = "\n".join([f"## {line}" for line in bazel.text.splitlines()])
 
-    ### 📋 Flavour Details:
-    - **Flavour:** {bazel.bazel_flavour.bazel_flavour_name}
-    - **Image Flavour:** {bazel.bazel_flavour.image_flavour_name}
-    """
+    if full_info:
+        answer = f"""
+        {formatted_bazel_text}
+
+        - **Bazel Flavour:** {bazel.bazel_flavour.bazel_flavour_name}
+        - **Image Flavour:** {bazel.bazel_flavour.image_flavour_name}
+        - **Image Description:** {bazel.image_description}
+        """
+    else:
+        answer = f"""
+        {formatted_bazel_text}
+        """
     logger.info("Answer successfully formatted.")
     return answer
