@@ -60,7 +60,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "default": {
-        "weight": 20,
+        "weight": 10,
         "bazel_instructions": "- Maak de bazel seksueel getint",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -236,7 +236,7 @@ BAZEL_IMAGE_FLAVOURS = {
         "instructions": "- Generate a distopian, depressing, overly sad setting for this bazel.",
     },
     "default": {
-        "weight": 20,
+        "weight": 10,
         "instructions": " ",
     },
     "futuristic": {
