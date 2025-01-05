@@ -17,7 +17,7 @@
 RANDOM_IMAGE_FLAVOUR = "random"
 BAZEL_FLAVOURS = {
     "animal": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je een dier zou zijn.
             - Je mag zelf kiezen welk dier
@@ -32,7 +32,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "caveman": {
-        "weight": 5,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je een oermens zou zijn.
             - Gebruik woorden zoals: "oogah boogah", "boem boem",...
@@ -48,7 +48,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "curse": {
-        "weight": 5,
+        "weight": 2,
         "bazel_instructions": "- Gebruik in deze bazel scheldwoorden en vervloekingen.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -60,7 +60,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "default": {
-        "weight": 10,
+        "weight": 5,
         "bazel_instructions": "- Maak de bazel seksueel getint",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -75,7 +75,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "drunk": {
-        "weight": 5,
+        "weight": 2,
         "bazel_instructions": "- Maak de bazel alsof je enorm dronken bent.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -87,7 +87,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "gay": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je homoseksueel bent.
             - Voeg "Jules" toe aan de bazel.
@@ -108,12 +108,12 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "mentally_slow": {
-        "weight": 5,
+        "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je een mentale achterstand hebt.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "nina": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Maak de bazel enkel met de adjectieven: "stom" en "kut".
             - Gebruik heel eenvoudige woorden.
@@ -122,7 +122,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "pepper": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Gebruik "hoeeeeeer" in je bazel.
         """,
@@ -146,7 +146,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "raging": {
-        "weight": 5,
+        "weight": 2,
         "bazel_instructions": "- Maak de bazel alsof je enorm kwaad bent.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -165,7 +165,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "stan": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Voeg "Stan" toe aan de bazel.
             - Maak de bazel alsof je niet uit je woorden geraakt.
@@ -174,7 +174,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "stef": {
-        "weight": 2,
+        "weight": 1,
         "bazel_instructions": """
             - Voeg "Stef" toe aan de bazel.
             - Maak de bazel alsof je niet wilt afwijken van je principes.
@@ -183,7 +183,7 @@ BAZEL_FLAVOURS = {
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "stoned": {
-        "weight": 5,
+        "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je helemaal high bent.",
         "image_instructions": """
             - Moet heel trippy zijn alsof je aan het hallucineren bent.
