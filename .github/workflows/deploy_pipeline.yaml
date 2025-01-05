@@ -17,6 +17,7 @@ jobs:
 
     - name: Setup SSH
       run: |
+        set -x
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 700 ~/.ssh
