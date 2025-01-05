@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request: # TODO: Remove
 
 jobs:
   deploy:
@@ -26,8 +26,17 @@ jobs:
       run: |
         ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no robin@mc.t3chlan.com << 'EOF'
           set -e
-          cd /Bazelbot
-          git pull origin main
+
+          # Check if the directory exists
+          if [ ! -d "/Bazelbot/.git" ]; then
+            echo "Cloning the repository..."
+            cd / && git clone git@github.com:RobinDeSmet/BazelBot.git Bazelbot
+          else
+            echo "Pulling latest changes..."
+            cd /Bazelbot && git pull origin main
+          fi
+
+          # Set environment variables
           touch .env
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
           echo "CHANNEL_ID=313397112777867264" >> .env
@@ -41,6 +50,8 @@ jobs:
           echo "BAZEL_IMAGE_WIDTH=350" >> .env
           echo "BAZEL_IMAGE_HEIGHT=350" >> .env
           echo "BAZEL_IMAGE_SAVE_PATH=data" >> .env
+
+          # Restart the containers
           docker-compose down
           docker-compose up -d --build
         EOF
