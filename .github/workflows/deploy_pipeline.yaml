@@ -21,9 +21,9 @@ jobs:
 
     - name: SSH into server and deploy
       run: |
-        ssh -o StrictHostKeyChecking=no user@your-server-ip << 'EOF'
+        ssh -o StrictHostKeyChecking=no robin@mc.t3chlan.com << 'EOF'
           # Navigate to the project directory or clone if it doesn't exist
-          cd /path/to/your/project || git clone git@github.com:your-username/your-repo.git /path/to/your/project
+          cd /BazelBot || git clone git@github.com:RobinDeSmet/BazelBot.git /BazelBot
 
           # Pull the latest code from the main branch
           git checkout main
