@@ -4,32 +4,39 @@ on:
   push:
     branches:
       - main
-  pull_request: # TODO: Remove
+  pull_request:
 
 jobs:
   deploy:
+    name: Deploy to Docker Server
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Set up SSH key
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: SSH into server and deploy
+    - name: Setup SSH
       run: |
-        ssh -o StrictHostKeyChecking=no robin@mc.t3chlan.com << 'EOF'
-          # Navigate to the project directory or clone if it doesn't exist
-          cd /BazelBot || git clone git@github.com:RobinDeSmet/BazelBot.git /BazelBot
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H mc.t3chlan.com >> ~/.ssh/known_hosts
 
-          # Pull the latest code from the main branch
-          git checkout main
-          git pull origin main
+    - name: Deploy to Server
+      run: |
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no robin@mc.t3chlan.com << 'EOF'
+          set -e
 
-          # Setup env vars
+          # Check if the directory exists
+          if [ ! -d "/BazelBot/.git" ]; then
+            echo "Cloning the repository..."
+            cd / && git clone https://github.com/yourusername/yourrepository.git Bazelbot
+          else
+            echo "Pulling latest changes..."
+            cd /BazelBot && git pull origin main
+          fi
+
+          # Set environment variables
           touch .env
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
           echo "CHANNEL_ID=313397112777867264" >> .env
@@ -44,19 +51,7 @@ jobs:
           echo "BAZEL_IMAGE_HEIGHT=350" >> .env
           echo "BAZEL_IMAGE_SAVE_PATH=data" >> .env
 
-          # Ensure Docker Compose is installed (optional, just in case)
-          if ! command -v docker-compose &> /dev/null
-          then
-            echo "docker-compose not found, installing..."
-            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-          fi
-
-          # Build and start the containers with Docker Compose
-          docker-compose down  # Stop and remove any old containers
-          docker-compose up -d --build  # Build and run the containers in detached mode
+          # Restart the containers
+          docker-compose down
+          docker-compose up -d --build
         EOF
-
-
-
-
