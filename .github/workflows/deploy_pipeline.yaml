@@ -19,8 +19,11 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 700 ~/.ssh
         chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -H mc.t3chlan.com >> ~/.ssh/known_hosts
+        # Debug step to confirm the permissions
+        ls -la ~/.ssh
 
     - name: Deploy to Server
       run: |
