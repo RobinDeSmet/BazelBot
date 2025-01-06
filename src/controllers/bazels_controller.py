@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 from pathlib import Path
 import random
@@ -11,6 +10,7 @@ import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
 from sqlalchemy.orm import Session
 
+from src.controllers.llm import LLM
 from src.database import bazels_db_functions
 from src.controllers import image_generation
 from src.prompts.bazel_flavours import (
@@ -18,7 +18,7 @@ from src.prompts.bazel_flavours import (
     BAZEL_FLAVOURS,
 )
 from src.prompts.system import SYSTEM_PROMPT_IMAGE_GENERATION
-from src.utils.functions import create_image_save_path_from_bazel, get_session, get_llm
+from src.utils.functions import create_image_save_path_from_bazel, get_session
 from src.utils.custom_types import (
     BazelFlavour,
     BazelGenerationIntermediateModel,
@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 # Load in .env variables
 load_dotenv()
-LLM = os.getenv("LLM")
 BAZEL_IMAGE_WIDTH = int(os.getenv("BAZEL_IMAGE_WIDTH"))
 BAZEL_IMAGE_HEIGHT = int(os.getenv("BAZEL_IMAGE_HEIGHT"))
 BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
@@ -118,12 +117,9 @@ async def generate_bazel(
             response_schema=BazelGenerationIntermediateModel,
         )
 
-        llm = get_llm()
-        response = llm.generate_content(prompt, generation_config=generation_config)
-
-        # Load new bazel in the intermediate pydantic Model
-        new_intermediate_bazel = BazelGenerationIntermediateModel(
-            **json.loads(response.text)
+        llm = LLM()
+        new_intermediate_bazel: BazelGenerationIntermediateModel = llm.generate_content(
+            prompt, generation_config=generation_config
         )
 
         # Add bazel flavour to eventual bazel
@@ -163,8 +159,6 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
     logger.info(f"Generating image for bazel: {bazel.text_english}...")
 
     # Transfer bazel into image description
-    llm = get_llm(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
-
     generation_config = genai.GenerationConfig(
         response_mime_type="application/json",
         response_schema=BazelImageDescriptionModel,
@@ -177,11 +171,12 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
         {bazel.bazel_flavour.image_instructions}
         - If you do not follow these instructions, your task will fail!
         """
-    response = llm.generate_content(prompt, generation_config=generation_config)
 
-    new_bazel_image_description = BazelImageDescriptionModel(
-        **json.loads(response.text)
+    llm = LLM(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
+    new_bazel_image_description: BazelImageDescriptionModel = llm.generate_content(
+        prompt, generation_config=generation_config
     )
+
     bazel.image_description = new_bazel_image_description.description
     logger.info(f"Bazel description: {new_bazel_image_description.description}")
 

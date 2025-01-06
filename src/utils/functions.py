@@ -5,11 +5,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from src.prompts.system import SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -43,40 +40,6 @@ def get_session() -> Session:
 
     # Return the session
     return session()
-
-
-def get_llm(
-    model: str = GEMINI_MODEL, system_instruction: str = SYSTEM_PROMPT
-) -> genai.GenerativeModel:
-    """Retrieve an LLM instance.
-
-    Args:
-        model (str, optional): The specific llm model. Defaults to GEMINI_MODEL.
-        system_instruction (str, optional): The system instructions. Defaults to SYSTEM_PROMPT.
-
-    Returns:
-        genai.GenerativeModel: The resulting model based on the input settings.
-    """
-    # Configure safety settings
-    safety_settings = {
-        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmBlockThreshold.BLOCK_NONE,
-    }
-
-    # Configure Google-Generative AI package with API key
-    genai.configure(api_key=GEMINI_API_KEY)
-
-    # Configure the model
-    llm = genai.GenerativeModel(
-        model,
-        safety_settings=safety_settings,
-        system_instruction=system_instruction,
-    )
-
-    return llm
 
 
 def generate_content_hash(content: str) -> str:
