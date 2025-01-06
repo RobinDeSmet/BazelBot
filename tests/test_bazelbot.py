@@ -87,7 +87,9 @@ def test_bazel_crud_works(setup_database):
 
 
 def test_random_bazel_flavour_generation():
-    for _ in range(10):
+    selected_text_flavours = []
+    selected_image_flavours = []
+    for i in range(20):
         # Generate bazel flavour
         random_flavour = bazels_controller.get_random_bazel_flavour()
         print(f"{random_flavour}\n")
@@ -118,6 +120,15 @@ def test_random_bazel_flavour_generation():
             assert random_flavour.image_flavour_name in BAZEL_FLAVOURS
             assert random_flavour.image_instructions
             assert random_flavour.image_instructions == RAW_IMAGE_INSTRUCTIONS
+
+        if i < 5:
+            selected_text_flavours.append(random_flavour.bazel_flavour_name)
+            selected_image_flavours.append(random_flavour.image_flavour_name)
+
+    assert len(set(selected_image_flavours)) == 5
+    assert len(set(selected_text_flavours)) == 5
+    assert len(bazels_controller.FILTER_TEXT_FLAVOURS) == 10
+    assert len(bazels_controller.FILTER_IMAGE_FLAVOURS) == 5
 
 
 def test_format_prompt(setup_database):

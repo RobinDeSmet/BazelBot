@@ -39,6 +39,11 @@ BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
 MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
 MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
 
+# We filter last 10 selected text flavours
+FILTER_TEXT_FLAVOURS = []
+# We filter last 5 selected image flavours
+FILTER_IMAGE_FLAVOURS = []
+
 
 def populate_database(messages: list[Message], session: Session = get_session()) -> int:
     """Populating the database with new messages
@@ -272,19 +277,25 @@ def get_random_bazel_flavour() -> BazelFlavour:
     bazel_flavours = []
     weights = []
     for flavour, flavour_values in BAZEL_FLAVOURS.items():
-        new_bazel_flavour = BazelFlavour(
-            bazel_flavour_name=flavour,
-            bazel_instructions=flavour_values["bazel_instructions"],
-            image_instructions=flavour_values["image_instructions"],
-            image_flavour_name=flavour,
-        )
-        bazel_flavours.append(new_bazel_flavour)
-        weights.append(flavour_values["weight"])
+        if flavour not in FILTER_TEXT_FLAVOURS:
+            new_bazel_flavour = BazelFlavour(
+                bazel_flavour_name=flavour,
+                bazel_instructions=flavour_values["bazel_instructions"],
+                image_instructions=flavour_values["image_instructions"],
+                image_flavour_name=flavour,
+            )
+            bazel_flavours.append(new_bazel_flavour)
+            weights.append(flavour_values["weight"])
 
     # Pick a random flavour
     random_flavour: BazelFlavour = random.choices(bazel_flavours, weights=weights, k=1)[
         0
     ]
+
+    # Add selected text flavour to filter
+    FILTER_TEXT_FLAVOURS.append(random_flavour.bazel_flavour_name)
+    if len(FILTER_TEXT_FLAVOURS) > 10:
+        FILTER_TEXT_FLAVOURS.pop()
 
     # Image flavour
     if random_flavour.image_instructions.lower() == "random":
@@ -292,13 +303,21 @@ def get_random_bazel_flavour() -> BazelFlavour:
         bazel_image_instructions = []
         weights = []
         for flavour, flavour_values in BAZEL_IMAGE_FLAVOURS.items():
-            bazel_image_instructions.append((flavour, flavour_values["instructions"]))
-            weights.append(flavour_values["weight"])
+            if flavour not in FILTER_IMAGE_FLAVOURS:
+                bazel_image_instructions.append(
+                    (flavour, flavour_values["instructions"])
+                )
+                weights.append(flavour_values["weight"])
 
         # Pick a random flavour
         random_image_flavour = random.choices(
             bazel_image_instructions, weights=weights, k=1
         )[0]
+
+        # Add selected image flavour to filter
+        FILTER_IMAGE_FLAVOURS.append(random_image_flavour[0])
+        if len(FILTER_IMAGE_FLAVOURS) > 5:
+            FILTER_IMAGE_FLAVOURS.pop()
 
         # Update the image flavour name and instructions
         random_flavour.image_flavour_name = random_image_flavour[0]
