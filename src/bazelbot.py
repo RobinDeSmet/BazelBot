@@ -44,7 +44,6 @@ async def on_ready():
         bazels_controller.populate_database(messages)
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
-
     logger.info("Ready to BAZEL!")
 
 

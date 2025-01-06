@@ -10,7 +10,7 @@ import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
 from sqlalchemy.orm import Session
 
-from src.controllers.llm import LLM
+from src.controllers.llm import GeminiLLM
 from src.database import bazels_db_functions
 from src.controllers import image_generation
 from src.prompts.bazel_flavours import (
@@ -18,6 +18,12 @@ from src.prompts.bazel_flavours import (
     BAZEL_FLAVOURS,
 )
 from src.prompts.system import SYSTEM_PROMPT_IMAGE_GENERATION
+from src.utils.errors import (
+    BazelCouldCouldNotBeGeneratedError,
+    BazelCouldNotBeGeneratedError,
+    ImageCouldNotBeGeneratedError,
+    QuotaExceededError,
+)
 from src.utils.functions import create_image_save_path_from_bazel, get_session
 from src.utils.custom_types import (
     BazelFlavour,
@@ -117,7 +123,7 @@ async def generate_bazel(
             response_schema=BazelGenerationIntermediateModel,
         )
 
-        llm = LLM()
+        llm = GeminiLLM()
         new_intermediate_bazel: BazelGenerationIntermediateModel = llm.generate_content(
             prompt, generation_config=generation_config
         )
@@ -140,13 +146,15 @@ async def generate_bazel(
         return new_bazel
     except ResourceExhausted as exc:
         logger.error("Quota exceeded. Please try again later.")
-        raise ValueError(
+        raise QuotaExceededError(
             "Quota exceeded (10 requests/min, 1500 requests/day). "
             "Please retry after you waited at least 1 minute."
         ) from exc
     except Exception as exc:
         logger.error(f"Bazel could not be generated: {exc}")
-        raise ValueError(f"Bazel could not be generated: {exc}") from exc
+        raise BazelCouldNotBeGeneratedError(
+            f"Bazel could not be generated: {exc}"
+        ) from exc
 
 
 async def generate_image_for_bazel(bazel: BazelModel, retries=2):
@@ -172,7 +180,7 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
         - If you do not follow these instructions, your task will fail!
         """
 
-    llm = LLM(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
+    llm = GeminiLLM(system_instruction=SYSTEM_PROMPT_IMAGE_GENERATION)
     new_bazel_image_description: BazelImageDescriptionModel = llm.generate_content(
         prompt, generation_config=generation_config
     )
@@ -209,7 +217,7 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
         except Exception as e:
             if attempt == retries - 1:
                 logger.error(f"Error generating the bazel image: {e}")
-                raise e
+                raise ImageCouldNotBeGeneratedError(f"Error generating the image: {e}")
             else:
                 logger.info(
                     f"Something went wrong when generating the bazel image: {e}. Retrying..."
@@ -253,7 +261,9 @@ def generate_bazel_context(
         return bazel_context
     except Exception as exc:
         logger.error(f"The bazel context could not be generated: {exc}")
-        raise exc
+        raise BazelCouldCouldNotBeGeneratedError(
+            f"The bazel context could not be generated: {exc}"
+        )
 
 
 def get_random_bazel_flavour() -> BazelFlavour:

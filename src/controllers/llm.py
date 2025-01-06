@@ -18,7 +18,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 
-class LLM:
+class GeminiLLM:
     """Gemini LLM."""
 
     def __init__(
@@ -78,5 +78,11 @@ class LLM:
                 if i >= 3:
                     logger.error(f"Could not generate content: {e}")
                     raise GenerationFailedError(f"Could not generate content: {e}")
+                elif i == 2:
+                    logger.info("Bazel a little too messed up. ")
+                    prompt += """
+                        \nDe bazel wordt steeds geweigerd om veiligheidsredenen.
+                        Zorg er in deze omstandigheden voor dat de bazel safe is volgens de Google Gemini standaarden.
+                    """
                 else:
                     logger.info("Generation of content failed. Retrying...")
