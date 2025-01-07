@@ -17,7 +17,7 @@ jobs:
           echo "DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db" >> .env
           echo "MAX_BAZEL_LENGTH=30" >> .env
           echo "MESSAGE_LIMIT=10000" >> .env
-          echo "RATE_LIMIT=10" >> .env
+          echo "RATE_LIMIT=20" >> .env
           echo "MAX_BAZELS_IN_CONTEXT=25" >> .env
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
           echo "GEMINI_MODEL=gemini-2.0-flash-exp" >> .env

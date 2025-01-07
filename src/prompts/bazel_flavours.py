@@ -1,4 +1,5 @@
 # INFO:
+# - Flavours should be stored alphabetically.
 # - The key of the flavour is the 'name' of that flavour
 # - The weight will determine the chance of that flavour being selected.
 # - The instructions have to be added to the prompt for the flavour to take effect.

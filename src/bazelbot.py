@@ -7,7 +7,7 @@ from discord.ext.commands import cooldown, BucketType
 from dotenv import load_dotenv
 
 from src.controllers import bazels_controller
-from src.database import bazels_db_functions
+from src.database import bazels_db
 from src.utils.custom_types import BazelType
 from src.utils.functions import configure_logging, create_image_save_path_from_bazel
 
@@ -44,7 +44,6 @@ async def on_ready():
         bazels_controller.populate_database(messages)
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")
-
     logger.info("Ready to BAZEL!")
 
 
@@ -203,7 +202,7 @@ async def update_bazel(ctx):
         amount_of_bazels = bazels_controller.populate_database(messages)
 
         await ctx.send(
-            f"Added {amount_of_bazels} bazels, there are now {bazels_db_functions.count()} bazels stored"
+            f"Added {amount_of_bazels} bazels, there are now {bazels_db.count()} bazels stored"
         )
     except Exception as exc:
         logger.error(f"Something went wrong trying to fetch the existing bazels: {exc}")

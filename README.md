@@ -24,7 +24,7 @@ The following environment variables need to be configured for the application to
 | `DB_CONNECTION_URL`        | Database connection URL for connecting to the PostgreSQL database.                         | `postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db` |
 | `MAX_BAZEL_LENGTH`         | Maximum length of a bazel (in words).                                                      | `30`                                             |
 | `MESSAGE_LIMIT`            | Number of messages to pull from the channel.                                               | `10000`                                          |
-| `RATE_LIMIT`               | Minimum time (in seconds) between bazel requests by a user.                                      | `10`                                             |
+| `RATE_LIMIT`               | Minimum time (in seconds) between bazel requests by a user.                                      | `20`                                             |
 | `MAX_BAZELS_IN_CONTEXT`    | Maximum number of bazels allowed in a single context window.                                       | `25`                                             |
 | `GEMINI_API_KEY`           | API key for the Gemini API.                                                                | `YOUR_GEMINI_API_KEY`                            |
 | `GEMINI_MODEL`             | Gemini model.                                              | `gemini-2.0-flash-exp`                           |
