@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bazelbot"
-version = "0.6.0"
+version = "0.7.0"
 description = ""
 authors = ["Robin De Smet <robin_de_smet@hotmail.be>"]
 readme = "README.md"
