@@ -11,7 +11,7 @@ from google.api_core.exceptions import ResourceExhausted
 from sqlalchemy.orm import Session
 
 from src.controllers.llm import GeminiLLM
-from src.database import bazels_db_functions
+from src.database import bazels_db
 from src.controllers import image_generation
 from src.prompts.bazel_flavours import (
     BAZEL_IMAGE_FLAVOURS,
@@ -24,7 +24,8 @@ from src.utils.errors import (
     ImageCouldNotBeGeneratedError,
     QuotaExceededError,
 )
-from src.utils.functions import create_image_save_path_from_bazel, get_session
+from src.utils.functions import create_image_save_path_from_bazel
+from src.database.session import get_session
 from src.utils.custom_types import (
     BazelFlavour,
     BazelGenerationIntermediateModel,
@@ -65,13 +66,13 @@ def populate_database(messages: list[Message], session: Session = get_session())
     added_bazels = 0
 
     # Check if db needs to be populated
-    if bazels_db_functions.count(session) == len(messages):
+    if bazels_db.count(session) == len(messages):
         logger.info("Database already populated")
         return added_bazels
     # Add the bazels
     for message in messages:
         try:
-            result = bazels_db_functions.add(message.content, session)
+            result = bazels_db.add(message.content, session)
 
             if result == 1:
                 added_bazels += 1
@@ -246,7 +247,7 @@ def generate_bazel_context(
 
     try:
         # Get bazels
-        bazels = bazels_db_functions.list(session=session)
+        bazels = bazels_db.list(session=session)
 
         # Sample 'nr_bazels' (default 10) random bazels
         nr_bazels = min(nr_bazels, len(bazels) - 1)

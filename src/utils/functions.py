@@ -5,13 +5,10 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
-DB_CONNECTION_URL = os.getenv("DB_CONNECTION_URL")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
@@ -24,22 +21,6 @@ def configure_logging():
         format="%(levelname)8s %(asctime)s %(name)24s %(message)s",
         datefmt="%H:%M:%S",
     )
-
-
-def get_session() -> Session:
-    """Get the db session
-
-    Returns:
-        Session: Session object for sqlalchemy
-    """
-    # Create an engine
-    engine = create_engine(DB_CONNECTION_URL)
-
-    # Create a session maker
-    session = sessionmaker(bind=engine)
-
-    # Return the session
-    return session()
 
 
 def generate_content_hash(content: str) -> str:

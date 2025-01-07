@@ -1,4 +1,4 @@
-from src.database import bazels_db_functions
+from src.database import bazels_db
 from src.database.models import Bazel
 from src.controllers import bazels_controller
 from src.prompts.bazel_flavours import (
@@ -58,32 +58,30 @@ def test_bazel_crud_works(setup_database):
     bazel_content = "New bazel that has to be added!!"
 
     # Add bazel
-    result = bazels_db_functions.add(bazel_content, session)
+    result = bazels_db.add(bazel_content, session)
 
     assert result == 1
 
     # Add duplicate bazel
-    result = bazels_db_functions.add(bazel_content, session)
+    result = bazels_db.add(bazel_content, session)
 
     assert result == 0
 
     # Retrieve bazel
-    bazel = bazels_db_functions.get(bazel_content, session)
+    bazel = bazels_db.get(bazel_content, session)
 
-    assert bazel.content_hash == bazels_db_functions.generate_content_hash(
-        bazel_content
-    )
+    assert bazel.content_hash == bazels_db.generate_content_hash(bazel_content)
 
     # List bazels
-    bazels = bazels_db_functions.list(session)
+    bazels = bazels_db.list(session)
 
     assert len(bazels) == TOTAL_NR_BAZELS + 1
 
     # Cleanup
-    bazels_db_functions.delete(bazel_content, session)
+    bazels_db.delete(bazel_content, session)
 
     # Check if bazel is successfully deleted
-    assert bazels_db_functions.count(session) == TOTAL_NR_BAZELS
+    assert bazels_db.count(session) == TOTAL_NR_BAZELS
 
 
 def test_random_bazel_flavour_generation():
