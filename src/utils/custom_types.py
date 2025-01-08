@@ -29,9 +29,7 @@ class BazelFlavour(BaseModel):
         output = ""
         output += "\nBAZEL FLAVOUR DATA:\n"
         output += f"bazel flavour name: {self.bazel_flavour_name}\n"
-        output += f"bazel instructions: {self.bazel_instructions}\n"
         output += f"image flavour name: {self.image_flavour_name}\n"
-        output += f"image instructions: {self.image_instructions}\n"
         return output
 
 

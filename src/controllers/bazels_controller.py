@@ -137,13 +137,12 @@ async def generate_bazel(
             image_description="None.",
             bazel_context=bazel_context,
         )
+        logger.info(f"Bazel successfully generated: {new_bazel}")
 
         # Generate image of the bazel if needed
         if generate_image:
             task = asyncio.create_task(generate_image_for_bazel(bazel=new_bazel))
             await task
-
-        logger.info(f"Bazel successfully generated: {new_bazel}")
         return new_bazel
     except ResourceExhausted as exc:
         logger.error("Quota exceeded. Please try again later.")
@@ -213,7 +212,9 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
                 save=True,
                 file=str(bazel_image_save_path),
             )
-            logger.info("Bazel image successfully generated!")
+            logger.info(
+                f"Bazel image successfully generated at: {bazel_image_save_path}"
+            )
             return
         except Exception as e:
             if attempt == retries - 1:
@@ -301,7 +302,7 @@ def get_random_bazel_flavour() -> BazelFlavour:
     # Add selected text flavour to filter
     FILTER_TEXT_FLAVOURS.append(random_flavour.bazel_flavour_name)
     if len(FILTER_TEXT_FLAVOURS) > 10:
-        FILTER_TEXT_FLAVOURS.pop()
+        FILTER_TEXT_FLAVOURS.pop(0)
 
     # Image flavour
     if random_flavour.image_instructions.lower() == "random":
@@ -323,7 +324,7 @@ def get_random_bazel_flavour() -> BazelFlavour:
         # Add selected image flavour to filter
         FILTER_IMAGE_FLAVOURS.append(random_image_flavour[0])
         if len(FILTER_IMAGE_FLAVOURS) > 5:
-            FILTER_IMAGE_FLAVOURS.pop()
+            FILTER_IMAGE_FLAVOURS.pop(0)
 
         # Update the image flavour name and instructions
         random_flavour.image_flavour_name = random_image_flavour[0]
@@ -375,7 +376,7 @@ def format_prompt(
                 {context}
                 """
 
-    logger.info(f"Prompt successfully formatted: {prompt}")
+    logger.info("Prompt successfully formatted")
     return prompt
 
 
