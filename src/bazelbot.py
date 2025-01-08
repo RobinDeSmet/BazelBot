@@ -172,6 +172,10 @@ async def custom_bazel_with_image(ctx, *, user_context):
             bazel_type=BazelType.CUSTOM,
         )
 
+        # Return the answer to the discord channel
+        formatted_bazel = bazels_controller.format_answer(new_custom_bazel)
+        await ctx.send(formatted_bazel)
+
         try:
             # Send image to discord
             bazel_image_save_path = create_image_save_path_from_bazel(
