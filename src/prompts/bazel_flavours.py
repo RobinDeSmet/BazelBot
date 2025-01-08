@@ -21,7 +21,7 @@ BAZEL_FLAVOURS = {
         "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je een dier zou zijn.
-            - Je mag zelf kiezen welk dier
+            - Je mag zelf kiezen welk dier.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },

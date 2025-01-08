@@ -109,7 +109,7 @@ async def bazel(ctx):
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the bazel: {exc}")
-        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="cumstom_bazel")
@@ -128,7 +128,7 @@ async def custom_bazel(ctx, *, user_context):
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")
-        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="bazel_pic")
@@ -143,19 +143,21 @@ async def bazel_with_image(ctx):
         formatted_bazel = bazels_controller.format_answer(new_bazel)
         await ctx.send(formatted_bazel)
 
-        # Send image to discord
-        bazel_image_save_path = create_image_save_path_from_bazel(
-            new_bazel.text_english
-        )
+        try:
+            # Send image to discord
+            bazel_image_save_path = create_image_save_path_from_bazel(
+                new_bazel.text_english
+            )
+            await ctx.send(file=discord.File(bazel_image_save_path))
 
-        await ctx.send(file=discord.File(bazel_image_save_path))
-
-        # Delete image locally
-        bazel_image_save_path.unlink()
+            # Delete image locally
+            bazel_image_save_path.unlink()
+        except Exception as e:
+            logger.error(f"Bazel image could not be generated: {e}")
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the bazel: {exc}")
-        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="cumstom_bazel_pic")
@@ -170,23 +172,21 @@ async def custom_bazel_with_image(ctx, *, user_context):
             bazel_type=BazelType.CUSTOM,
         )
 
-        # Return the answer to the discord channel
-        formatted_bazel = bazels_controller.format_answer(new_custom_bazel)
-        await ctx.send(formatted_bazel)
+        try:
+            # Send image to discord
+            bazel_image_save_path = create_image_save_path_from_bazel(
+                new_custom_bazel.text_english
+            )
+            await ctx.send(file=discord.File(bazel_image_save_path))
 
-        # Send image to discord
-        bazel_image_save_path = create_image_save_path_from_bazel(
-            new_custom_bazel.text_english
-        )
-
-        await ctx.send(file=discord.File(bazel_image_save_path))
-
-        # Delete image locally
-        bazel_image_save_path.unlink()
+            # Delete image locally
+            bazel_image_save_path.unlink()
+        except Exception as e:
+            logger.error(f"Bazel image could not be generated: {e}")
     except Exception as exc:
         # Provide error logging
         logger.error(f"Something went wrong while generating the custom bazel: {exc}")
-        await ctx.send(f"OOPSIE WOOPSIE EEN ERROR: {exc}")
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="update_bazels")
