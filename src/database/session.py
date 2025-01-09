@@ -16,7 +16,12 @@ def get_session() -> Session:
         Session: Session object for sqlalchemy
     """
     # Create an engine
-    engine = create_engine(DB_CONNECTION_URL)
+    engine = create_engine(
+        DB_CONNECTION_URL,
+        pool_size=20,
+        max_overflow=10,
+        pool_timeout=30,
+    )
 
     # Create a session maker
     session = sessionmaker(bind=engine)
