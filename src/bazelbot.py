@@ -11,7 +11,6 @@ from src.database import bazels_db
 from src.utils.custom_types import BazelType
 from src.utils.functions import configure_logging, create_image_save_path_from_bazel
 
-# Load in .env variables
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))

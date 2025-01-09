@@ -1,3 +1,6 @@
+import math
+import os
+from dotenv import load_dotenv
 from src.database import bazels_db
 from src.database.models import Bazel
 from src.controllers import bazels_controller
@@ -7,6 +10,9 @@ from src.prompts.bazel_flavours import (
 )
 from src.utils.custom_types import BazelFlavour, BazelType
 from tests.conftest import TOTAL_NR_BAZELS, MAX_BAZELS_IN_CONTEXT
+
+load_dotenv()
+BAZEL_FLAVOUR_VARIETY = int(os.getenv("BAZEL_FLAVOUR_VARIETY"))
 
 
 def test_database_connection(setup_database):
@@ -87,10 +93,9 @@ def test_bazel_crud_works(setup_database):
 def test_random_bazel_flavour_generation():
     selected_text_flavours = []
     selected_image_flavours = []
-    for i in range(20):
+    for i in range(BAZEL_FLAVOUR_VARIETY * 2):
         # Generate bazel flavour
         random_flavour = bazels_controller.get_random_bazel_flavour()
-        print(f"{random_flavour}\n")
 
         # Check
         assert random_flavour.bazel_flavour_name in BAZEL_FLAVOURS
@@ -119,14 +124,23 @@ def test_random_bazel_flavour_generation():
             assert random_flavour.image_instructions
             assert random_flavour.image_instructions == RAW_IMAGE_INSTRUCTIONS
 
-        if i < 5:
+        if i < bazels_controller.FILTER_TEXT_FLAVOURS_MAX_SIZE:
             selected_text_flavours.append(random_flavour.bazel_flavour_name)
+        if i < bazels_controller.FILTER_IMAGE_FLAVOURS_MAX_SIZE:
             selected_image_flavours.append(random_flavour.image_flavour_name)
 
-    assert len(set(selected_image_flavours)) == 5
-    assert len(set(selected_text_flavours)) == 5
-    assert len(bazels_controller.FILTER_TEXT_FLAVOURS) == 10
-    assert len(bazels_controller.FILTER_IMAGE_FLAVOURS) == 5
+    assert len(set(selected_image_flavours)) == min(
+        math.floor(BAZEL_FLAVOUR_VARIETY / 2), len(BAZEL_IMAGE_FLAVOURS) - 1
+    )
+    assert len(set(selected_text_flavours)) == min(
+        BAZEL_FLAVOUR_VARIETY, len(BAZEL_FLAVOURS) - 1
+    )
+    assert len(bazels_controller.FILTER_TEXT_FLAVOURS) == min(
+        BAZEL_FLAVOUR_VARIETY, len(BAZEL_FLAVOURS) - 1
+    )
+    assert len(bazels_controller.FILTER_IMAGE_FLAVOURS) == min(
+        math.floor(BAZEL_FLAVOUR_VARIETY / 2), len(BAZEL_IMAGE_FLAVOURS) - 1
+    )
 
 
 def test_format_prompt(setup_database):

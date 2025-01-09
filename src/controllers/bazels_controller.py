@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 import random
 import os
+import math
 
 from discord import Message
 from dotenv import load_dotenv
@@ -37,18 +38,22 @@ from src.utils.custom_types import (
 
 logger = logging.getLogger(__name__)
 
-# Load in .env variables
 load_dotenv()
 BAZEL_IMAGE_WIDTH = int(os.getenv("BAZEL_IMAGE_WIDTH"))
 BAZEL_IMAGE_HEIGHT = int(os.getenv("BAZEL_IMAGE_HEIGHT"))
+BAZEL_FLAVOUR_VARIETY = int(os.getenv("BAZEL_FLAVOUR_VARIETY"))
 BAZEL_IMAGE_SAVE_PATH = os.getenv("BAZEL_IMAGE_SAVE_PATH")
 MAX_BAZEL_LENGTH = int(os.getenv("MAX_BAZEL_LENGTH"))
 MAX_BAZELS_IN_CONTEXT = int(os.getenv("MAX_BAZELS_IN_CONTEXT"))
 
-# We filter last 10 selected text flavours
+# We filter last BAZEL_FLAVOUR_VARIETY selected text flavours
 FILTER_TEXT_FLAVOURS = []
-# We filter last 5 selected image flavours
+FILTER_TEXT_FLAVOURS_MAX_SIZE = min(BAZEL_FLAVOUR_VARIETY, len(BAZEL_FLAVOURS) - 1)
+# We filter last BAZEL_FLAVOUR_VARIETY/2 selected image flavours
 FILTER_IMAGE_FLAVOURS = []
+FILTER_IMAGE_FLAVOURS_MAX_SIZE = min(
+    math.floor(BAZEL_FLAVOUR_VARIETY / 2), len(BAZEL_IMAGE_FLAVOURS) - 1
+)
 
 
 def populate_database(messages: list[Message], session: Session = get_session()) -> int:
@@ -301,7 +306,7 @@ def get_random_bazel_flavour() -> BazelFlavour:
 
     # Add selected text flavour to filter
     FILTER_TEXT_FLAVOURS.append(random_flavour.bazel_flavour_name)
-    if len(FILTER_TEXT_FLAVOURS) > 10:
+    if len(FILTER_TEXT_FLAVOURS) > FILTER_TEXT_FLAVOURS_MAX_SIZE:
         FILTER_TEXT_FLAVOURS.pop(0)
 
     # Image flavour
@@ -323,7 +328,7 @@ def get_random_bazel_flavour() -> BazelFlavour:
 
         # Add selected image flavour to filter
         FILTER_IMAGE_FLAVOURS.append(random_image_flavour[0])
-        if len(FILTER_IMAGE_FLAVOURS) > 5:
+        if len(FILTER_IMAGE_FLAVOURS) > FILTER_IMAGE_FLAVOURS_MAX_SIZE:
             FILTER_IMAGE_FLAVOURS.pop(0)
 
         # Update the image flavour name and instructions
