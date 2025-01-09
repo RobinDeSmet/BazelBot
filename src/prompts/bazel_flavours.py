@@ -25,6 +25,13 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
+    "axel": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Includeer: "huh huh huh" in de bazel.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "blub": {
         "weight": 1,
         "bazel_instructions": """
@@ -108,6 +115,24 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
+    "jeppejoker": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Includeer een flauwe woordspeling in de bazel.
+            - Includeer "deez nuts" aan de bazel.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "jorik": {
+        "weight": 1,
+        "bazel_instructions": """
+            Kies 1 van de volgende mogelijkheden:
+                - Includeer in de bazel dat je een specifiek land gaat koloniseren met je troepen.
+                - Includeer dat je je dit weekend naar de pleuris gedronken hebt.
+                - Includeer dat je snakt naar medicijn.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "mentally_slow": {
         "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je een mentale achterstand hebt.",
@@ -118,7 +143,6 @@ BAZEL_FLAVOURS = {
         "bazel_instructions": """
             - Maak de bazel enkel met de adjectieven: "stom" en "kut".
             - Gebruik heel eenvoudige woorden.
-            - Voeg "Nina" toe aan de bazel.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -132,6 +156,11 @@ BAZEL_FLAVOURS = {
     "philosophic": {
         "weight": 1,
         "bazel_instructions": "- Maak de bazel alsof je een ruimdenkende filosoof bent.",
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "pingu": {
+        "weight": 1,
+        "bazel_instructions": "- Includeer: 'noot noot' in de bazel.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
     "pirate": {
@@ -151,6 +180,13 @@ BAZEL_FLAVOURS = {
         "bazel_instructions": "- Maak de bazel alsof je enorm kwaad bent.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
+    "robin": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Voeg op het einde van de bazel dit toe als extra zin: "Dit is een offer aan u, almachtige BazelGod, Robin!".
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "romantic": {
         "weight": 1,
         "bazel_instructions": """
@@ -168,7 +204,6 @@ BAZEL_FLAVOURS = {
     "stan": {
         "weight": 1,
         "bazel_instructions": """
-            - Voeg "Stan" toe aan de bazel.
             - Maak de bazel alsof je niet uit je woorden geraakt.
             - Het moet een bazel zijn die een verhaal vertelt dat nergens naartoe gaat.
         """,
@@ -177,7 +212,6 @@ BAZEL_FLAVOURS = {
     "stef": {
         "weight": 1,
         "bazel_instructions": """
-            - Voeg "Stef" toe aan de bazel.
             - Maak de bazel alsof je niet wilt afwijken van je principes.
             - Voeg iets toe dat te maken heeft met frituur.
         """,
@@ -190,16 +224,6 @@ BAZEL_FLAVOURS = {
             - Moet heel trippy zijn alsof je aan het hallucineren bent.
             - Laat het lijken op een acid trip.
         """,
-    },
-    "stoned_random": {
-        "weight": 1,
-        "bazel_instructions": "- Maak de bazel alsof je helemaal high bent.",
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
-    "trump": {
-        "weight": 1,
-        "bazel_instructions": "- Laat de bazel klinken alsof Donald Trump hem zou uitspreken",
-        "image_instructions": "- Deze bazel is uitgesproken door president Donald Trump. Zorg voor een passende setting!",
     },
 }
 
@@ -318,6 +342,12 @@ BAZEL_IMAGE_FLAVOURS = {
         "weight": 1,
         "instructions": """
             - Create a religious setting for this bazel.
+        """,
+    },
+    "sexual": {
+        "weight": 1,
+        "instructions": """
+            - Create a sexual setting for this bazel.
         """,
     },
     "toddler": {
