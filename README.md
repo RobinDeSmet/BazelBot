@@ -30,6 +30,7 @@ The following environment variables need to be configured for the application to
 | `GEMINI_MODEL`             | Gemini model.                                              | `gemini-2.0-flash-exp`                           |
 | `BAZEL_IMAGE_WIDTH`             | The width of the generated bazel image.                                              | `350`                           |
 | `BAZEL_IMAGE_HEIGHT`             | The height of the generated bazel image.                                              | `350`                           |
+| `BAZEL_FLAVOUR_VARIETY`             | Determines the length of the bazel flavour filter list. Every selected bazel will be filtered until this number of other, different bazels are picked. In short, the higher this number, the more variety in the bazel flavours.                                              | `20`                           |
 | `BAZEL_IMAGE_SAVE_PATH`             | The path to the directory where the generated bazel image will be stored.                                             | `data`                           |
 
 
