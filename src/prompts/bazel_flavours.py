@@ -17,11 +17,20 @@
 
 RANDOM_IMAGE_FLAVOUR = "random"
 BAZEL_FLAVOURS = {
+    "aggressive": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Maak de bazel alsof je iemand zeer aggressief bent.
+            - Je mag dreigen.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "animal": {
         "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je een dier zou zijn.
             - Je mag zelf kiezen welk dier.
+            - Toon dat je dat dier bent aan de hand van diergeluiden.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -36,6 +45,14 @@ BAZEL_FLAVOURS = {
         "weight": 1,
         "bazel_instructions": """
             - Maak de bazel alsof je op de bodem van de oceaan zou zijn.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "clown": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Maak de bazel alsof je een clown zou zijn.
+            - Je mag kiezen of de clown eng is of niet.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -82,6 +99,11 @@ BAZEL_FLAVOURS = {
         "bazel_instructions": "- Maak de bazel zeer deprimerend.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
+    "dialect": {
+        "weight": 1,
+        "bazel_instructions": "- Maak de bazel op in een bepaald dialect.",
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "drunk": {
         "weight": 2,
         "bazel_instructions": "- Maak de bazel alsof je enorm dronken bent.",
@@ -112,6 +134,20 @@ BAZEL_FLAVOURS = {
         "bazel_instructions": """
             - Zorg ervoor dat de bazel in een poetisch vorm, genaamd haiku, is gegoten.
             - De definitie van een haiku is: drie regels van 5, 7 en 5 lettergrepen.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "homer_simpson": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Maak de bazel alsof je Homer Simpson zou zijn.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
+    "illogical": {
+        "weight": 2,
+        "bazel_instructions": """
+            - Zorg ervoor dat de bazel compleet onlogisch is.
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -175,6 +211,13 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
+    "pun": {
+        "weight": 1,
+        "bazel_instructions": """
+            - Maak een woordspeling in de bazel.
+        """,
+        "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    },
     "raging": {
         "weight": 2,
         "bazel_instructions": "- Maak de bazel alsof je enorm kwaad bent.",
@@ -183,7 +226,7 @@ BAZEL_FLAVOURS = {
     "robin": {
         "weight": 1,
         "bazel_instructions": """
-            - Voeg op het einde van de bazel dit toe als extra zin: "Dit is een offer aan u, almachtige BazelGod, Robin!".
+            - Voeg op het einde van de bazel dit toe als extra zin: "Aja, en Robin heeft een grote piemel.".
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
@@ -234,6 +277,10 @@ BAZEL_IMAGE_FLAVOURS = {
         "weight": 1,
         "instructions": "- Generate an action movie scene for this bazel.",
     },
+    "album_cover": {
+        "weight": 1,
+        "instructions": "- Generate an album cover for this bazel in a genre that best fits this bazel.",
+    },
     "anime": {
         "weight": 1,
         "instructions": "- Generate an anime setting for this bazel.",
@@ -241,6 +288,10 @@ BAZEL_IMAGE_FLAVOURS = {
     "apocalyptic": {
         "weight": 1,
         "instructions": "- Generate an apocalyptic setting for this bazel.",
+    },
+    "charlie_chaplin": {
+        "weight": 1,
+        "instructions": "- Create a Charlie Chaplin like scene for this bazel.",
     },
     "christmas": {
         "weight": 1,
@@ -288,6 +339,10 @@ BAZEL_IMAGE_FLAVOURS = {
     "insides": {
         "weight": 1,
         "instructions": "- Generate a setting for this bazel as if you where on the inside of a human body.",
+    },
+    "jim_carrey": {
+        "weight": 1,
+        "instructions": "- Create a scene with Jim Carrey in it for this bazel.",
     },
     "japanese_commercial": {
         "weight": 1,
@@ -354,6 +409,18 @@ BAZEL_IMAGE_FLAVOURS = {
         "weight": 1,
         "instructions": """
             - Create a childish drawing of this bazel.
+        """,
+    },
+    "youtube_thumbnail": {
+        "weight": 1,
+        "instructions": """
+            - Create a Youtube thumbnail for this bazel.
+        """,
+    },
+    "x_twitter": {
+        "weight": 1,
+        "instructions": """
+            - Create a Twitter tweet post for this bazel.
         """,
     },
 }
