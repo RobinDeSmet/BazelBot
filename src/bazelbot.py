@@ -135,17 +135,17 @@ async def custom_bazel(ctx, *, user_context):
 @cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def bazel_with_image(ctx):
     """Generate a bazel with image."""
+    text_bazel_success = False
+    image_bazel_success = False
     try:
         # Generate the bazel and bazel image
         new_bazel = await bazels_controller.generate_bazel()
 
-        # Return the answer to the discord channel
+        # Format the bazel
         formatted_bazel = bazels_controller.format_answer(new_bazel)
-        await ctx.send(formatted_bazel)
+        text_bazel_success = True
     except Exception as exc:
-        # Provide error logging
-        logger.error(f"Something went wrong while generating the bazel: {exc}")
-        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
+        logger.error(f"Error trying to process the bazel: {exc}")
 
     try:
         # Create bazel image
@@ -158,18 +158,28 @@ async def bazel_with_image(ctx):
         bazel_image_save_path = create_image_save_path_from_bazel(
             new_bazel.text_english
         )
-        await ctx.send(file=discord.File(bazel_image_save_path))
-
-        # Delete image locally
-        bazel_image_save_path.unlink()
+        image_bazel_success = True
     except Exception as e:
-        logger.error(f"Bazel image could not be sent: {e}")
+        logger.error(f"Error trying to process the bazel image: {e}")
+
+    # Send correct messages to discord
+    if text_bazel_success:
+        await ctx.send(formatted_bazel)
+        if image_bazel_success:
+            await ctx.send(file=discord.File(bazel_image_save_path))
+
+            # Delete image again locally
+            bazel_image_save_path.unlink()
+    else:
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="cumstom_bazel_pic")
 @cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def custom_bazel_with_image(ctx, *, user_context):
     """Generate custom bazel with image."""
+    text_bazel_success = False
+    image_bazel_success = False
     try:
         # Generate custom bazel and bazel image
         new_custom_bazel = await bazels_controller.generate_bazel(
@@ -179,11 +189,9 @@ async def custom_bazel_with_image(ctx, *, user_context):
 
         # Return the answer to the discord channel
         formatted_bazel = bazels_controller.format_answer(new_custom_bazel)
-        await ctx.send(formatted_bazel)
+        text_bazel_success = True
     except Exception as exc:
-        # Provide error logging
-        logger.error(f"Something went wrong while generating the custom bazel: {exc}")
-        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
+        logger.error(f"Error trying to process the custom bazel: {exc}")
 
     try:
         # Create bazel image
@@ -196,12 +204,20 @@ async def custom_bazel_with_image(ctx, *, user_context):
         bazel_image_save_path = create_image_save_path_from_bazel(
             new_custom_bazel.text_english
         )
-        await ctx.send(file=discord.File(bazel_image_save_path))
-
-        # Delete image locally
-        bazel_image_save_path.unlink()
+        image_bazel_success = True
     except Exception as e:
-        logger.error(f"Bazel image could not be sent: {e}")
+        logger.error(f"Error trying to process the bazel image: {e}")
+
+    # Send correct messages to discord
+    if text_bazel_success:
+        await ctx.send(formatted_bazel)
+        if image_bazel_success:
+            await ctx.send(file=discord.File(bazel_image_save_path))
+
+            # Delete image again locally
+            bazel_image_save_path.unlink()
+    else:
+        await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
 
 @bot.command(name="update_bazels")

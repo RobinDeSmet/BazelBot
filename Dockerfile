@@ -1,6 +1,6 @@
 # Stage 0: base image for bazelbot
 ARG PYTHON_VERSION=3.12
-FROM python:${PYTHON_VERSION} as base
+FROM python:${PYTHON_VERSION} AS base
 
 ENV PYTHONUNBUFFERED=1 \
     PATH=/opt/poetry/bin:$PATH \
@@ -26,7 +26,7 @@ ENV PYTHONPATH="${HOME}/src:${PYTHONPATH}"
 # Stage 1: build image
 # Install all runtime dependencies,
 # but without project's sources, which get copied later
-FROM base as build
+FROM base AS build
 COPY pyproject.toml poetry.lock ${HOME}
 COPY . ${HOME}
 RUN poetry install --no-root --only main && rm -rf ${POETRY_CACHE_DIR}
