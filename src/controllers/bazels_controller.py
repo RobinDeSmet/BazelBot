@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from pathlib import Path
 import random
@@ -92,7 +91,6 @@ async def generate_bazel(
     nr_bazels: int = 10,
     user_context: str = "",
     bazel_type: BazelType = BazelType.NORMAL,
-    generate_image: bool = False,
     session: Session = get_session(),
 ) -> BazelModel:
     """Generate a bazel
@@ -101,7 +99,6 @@ async def generate_bazel(
         nr_bazels (int, optional): Number of bazels to be taken as context. Defaults to 10.
         user_context (str, optional): The user context when a custom bazel is requested. Defaults to "".
         bazel_type (BazelType, optional): Bazel type. Defaults to BazelType.NORMAL.
-        generate_image (bool, optional): Determines if an image will be generated for the Bazel. Defaults to False.
         session (Session, optional): The session. Defaults to get_session().
 
     Returns:
@@ -142,12 +139,9 @@ async def generate_bazel(
             image_description="None.",
             bazel_context=bazel_context,
         )
-        logger.info(f"Bazel successfully generated: {new_bazel}")
 
-        # Generate image of the bazel if needed
-        if generate_image:
-            task = asyncio.create_task(generate_image_for_bazel(bazel=new_bazel))
-            await task
+        # Return the bazel
+        logger.info(f"Bazel successfully generated: {new_bazel}")
         return new_bazel
     except ResourceExhausted as exc:
         logger.error("Quota exceeded. Please try again later.")

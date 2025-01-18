@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 from dotenv import load_dotenv
@@ -78,9 +79,13 @@ async def test_generate_bazel_with_image(setup_database):
     # Create 3 test samples
     for _ in range(3):
         # Generate normal bazel
-        bazel = await bazels_controller.generate_bazel(
-            generate_image=True, session=session
+        bazel = await bazels_controller.generate_bazel(session=session)
+
+        # Create bazel image
+        task = asyncio.create_task(
+            bazels_controller.generate_image_for_bazel(bazel=bazel)
         )
+        await task
 
         formatted_bazel = bazels_controller.format_answer(bazel, full_info=True)
 
