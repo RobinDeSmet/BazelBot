@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 import discord
@@ -134,9 +135,9 @@ async def custom_bazel(ctx, *, user_context):
 @cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def bazel_with_image(ctx):
     """Generate a bazel with image."""
-    # Generate the bazel
     try:
-        new_bazel = await bazels_controller.generate_bazel(generate_image=True)
+        # Generate the bazel and bazel image
+        new_bazel = await bazels_controller.generate_bazel()
 
         # Return the answer to the discord channel
         formatted_bazel = bazels_controller.format_answer(new_bazel)
@@ -147,6 +148,12 @@ async def bazel_with_image(ctx):
         await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
     try:
+        # Create bazel image
+        task = asyncio.create_task(
+            bazels_controller.generate_image_for_bazel(bazel=new_bazel)
+        )
+        await task
+
         # Send image to discord
         bazel_image_save_path = create_image_save_path_from_bazel(
             new_bazel.text_english
@@ -156,17 +163,16 @@ async def bazel_with_image(ctx):
         # Delete image locally
         bazel_image_save_path.unlink()
     except Exception as e:
-        logger.error(f"Bazel image could not be generated: {e}")
+        logger.error(f"Bazel image could not be sent: {e}")
 
 
 @bot.command(name="cumstom_bazel_pic")
 @cooldown(1, 3 * RATE_LIMIT, BucketType.user)
 async def custom_bazel_with_image(ctx, *, user_context):
     """Generate custom bazel with image."""
-    # Generate custom bazel
     try:
+        # Generate custom bazel and bazel image
         new_custom_bazel = await bazels_controller.generate_bazel(
-            generate_image=True,
             user_context=user_context,
             bazel_type=BazelType.CUSTOM,
         )
@@ -180,6 +186,12 @@ async def custom_bazel_with_image(ctx, *, user_context):
         await ctx.send("OOPSIE WOOPSIE, ik heb mij een beetje kapotgebazeld!")
 
     try:
+        # Create bazel image
+        task = asyncio.create_task(
+            bazels_controller.generate_image_for_bazel(bazel=new_custom_bazel)
+        )
+        await task
+
         # Send image to discord
         bazel_image_save_path = create_image_save_path_from_bazel(
             new_custom_bazel.text_english
@@ -189,7 +201,7 @@ async def custom_bazel_with_image(ctx, *, user_context):
         # Delete image locally
         bazel_image_save_path.unlink()
     except Exception as e:
-        logger.error(f"Bazel image could not be generated: {e}")
+        logger.error(f"Bazel image could not be sent: {e}")
 
 
 @bot.command(name="update_bazels")
