@@ -44,6 +44,7 @@ The following environment variables need to be configured for the application to
     In the developer portal, you can retrieve the bot token.
   * Activate [developer mode](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID) in discord.
     Then, copy the ID of a text channel of your choice. This channel will be used as the inspiration for the bot.
+  * You will need an Gemini API key to run the bot. You can create one here: [Gemini API key](https://aistudio.google.com/app/apikey). 
 * Run `make up`
 * Run `make run` to run the bot locally
 
