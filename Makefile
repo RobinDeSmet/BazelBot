@@ -6,6 +6,7 @@ test-llm:
 
 run:
 	poetry shell & poetry run python src/bazelbot.py
+
 build:
 	docker compose up -d --build
 
