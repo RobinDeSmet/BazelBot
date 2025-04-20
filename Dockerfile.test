@@ -14,7 +14,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV VIRTUAL_ENV="${HOME}/.venv"
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --version 1.8.5 && \
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --version 2.1.2 && \
     groupadd -g 1234 appuser && \
     useradd -m -u 1234 -g appuser appuser && \
     mkdir -p ${HOME}
