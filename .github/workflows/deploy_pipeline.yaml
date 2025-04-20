@@ -1,0 +1,59 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    name: Deploy to Docker Server
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup SSH
+      run: |
+        set -x
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H mc.t3chlan.com > ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      run: |
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no robin@mc.t3chlan.com << 'EOF'
+          set -e
+
+          # Check if the directory exists
+          if [ ! -d "/BazelBot/.git" ]; then
+            echo "Cloning the repository..."
+            cd / && git clone https://github.com/yourusername/yourrepository.git Bazelbot
+          else
+            echo "Pulling latest changes..."
+            cd /BazelBot && git pull origin main
+          fi
+
+          # Set environment variables
+          touch .env
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "CHANNEL_ID=313397112777867264" >> .env
+          echo "DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db" >> .env
+          echo "MAX_BAZEL_LENGTH=30" >> .env
+          echo "MESSAGE_LIMIT=10000" >> .env
+          echo "RATE_LIMIT=10" >> .env
+          echo "MAX_BAZELS_IN_CONTEXT=25" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "GEMINI_MODEL=gemini-2.0-flash-exp" >> .env
+          echo "BAZEL_IMAGE_WIDTH=350" >> .env
+          echo "BAZEL_IMAGE_HEIGHT=350" >> .env
+          echo "BAZEL_IMAGE_SAVE_PATH=data" >> .env
+
+          # Restart the containers
+          docker-compose down
+          docker-compose up -d --build
+        EOF
