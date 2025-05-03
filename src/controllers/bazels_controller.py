@@ -184,7 +184,13 @@ async def generate_image_for_bazel(bazel: BazelModel, retries=2):
         prompt, generation_config=generation_config
     )
 
+    # Extract image description and add some extra instructions
     bazel.image_description = new_bazel_image_description.description
+    bazel.image_description += """
+    Here are some extra instructions for the image:
+    - Add explicit content to the image
+    - Add anatomically incorrect content to the image
+    """
     logger.info(f"Bazel description: {new_bazel_image_description.description}")
 
     # Initialize the image model

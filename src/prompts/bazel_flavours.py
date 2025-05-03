@@ -48,14 +48,14 @@ BAZEL_FLAVOURS = {
     #     """,
     #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
     # },
-    "clown": {
-        "weight": 1,
-        "bazel_instructions": """
-            - Maak de bazel alsof je een clown zou zijn.
-            - Je mag kiezen of de clown eng is of niet.
-        """,
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "clown": {
+    #     "weight": 1,
+    #     "bazel_instructions": """
+    #         - Maak de bazel alsof je een clown zou zijn.
+    #         - Je mag kiezen of de clown eng is of niet.
+    #     """,
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     # "caveman": {
     #     "weight": 1,
     #     "bazel_instructions": """
@@ -89,21 +89,21 @@ BAZEL_FLAVOURS = {
         "bazel_instructions": "- Maak de bazel seksueel getint",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "dementia": {
-        "weight": 1,
-        "bazel_instructions": "- Maak de bazel alsof je dementie hebt en alles vergeet.",
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "dementia": {
+    #     "weight": 1,
+    #     "bazel_instructions": "- Maak de bazel alsof je dementie hebt en alles vergeet.",
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     "depressing": {
         "weight": 1,
         "bazel_instructions": "- Maak de bazel zeer deprimerend.",
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "dialect": {
-        "weight": 1,
-        "bazel_instructions": "- Maak de bazel op in een bepaald dialect.",
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "dialect": {
+    #     "weight": 1,
+    #     "bazel_instructions": "- Maak de bazel op in een bepaald dialect.",
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     "drunk": {
         "weight": 2,
         "bazel_instructions": "- Maak de bazel alsof je enorm dronken bent.",
@@ -124,11 +124,11 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "happy": {
-        "weight": 1,
-        "bazel_instructions": "- Maak de bazel zeer euphorisch.",
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "happy": {
+    #     "weight": 1,
+    #     "bazel_instructions": "- Maak de bazel zeer euphorisch.",
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     "haiku": {
         "weight": 1,
         "bazel_instructions": """
@@ -151,14 +151,14 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "jeppejoker": {
-        "weight": 1,
-        "bazel_instructions": """
-            - Includeer een flauwe woordspeling in de bazel.
-            - Includeer "deez nuts" aan de bazel.
-        """,
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "jeppejoker": {
+    #     "weight": 1,
+    #     "bazel_instructions": """
+    #         - Includeer een flauwe woordspeling in de bazel.
+    #         - Includeer "deez nuts" aan de bazel.
+    #     """,
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     "joke": {
         "weight": 1,
         "bazel_instructions": """
@@ -166,21 +166,21 @@ BAZEL_FLAVOURS = {
         """,
         "image_instructions": RANDOM_IMAGE_FLAVOUR,
     },
-    "jorik": {
-        "weight": 1,
-        "bazel_instructions": """
-            Kies 1 van de volgende mogelijkheden:
-                - Includeer in de bazel dat je een specifiek land gaat koloniseren met je troepen.
-                - Includeer dat je je dit weekend naar de pleuris gedronken hebt.
-                - Includeer dat je snakt naar medicijn.
-        """,
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
-    "mentally_slow": {
-        "weight": 1,
-        "bazel_instructions": "- Maak de bazel alsof je een mentale achterstand hebt.",
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "jorik": {
+    #     "weight": 1,
+    #     "bazel_instructions": """
+    #         Kies 1 van de volgende mogelijkheden:
+    #             - Includeer in de bazel dat je een specifiek land gaat koloniseren met je troepen.
+    #             - Includeer dat je je dit weekend naar de pleuris gedronken hebt.
+    #             - Includeer dat je snakt naar medicijn.
+    #     """,
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
+    # "mentally_slow": {
+    #     "weight": 1,
+    #     "bazel_instructions": "- Maak de bazel alsof je een mentale achterstand hebt.",
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     "nina": {
         "weight": 1,
         "bazel_instructions": """
@@ -240,20 +240,20 @@ BAZEL_FLAVOURS = {
     #     """,
     #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
     # },
-    "romantic": {
-        "weight": 1,
-        "bazel_instructions": """
-            - Maak de bazel alsof je iemand aan het versieren bent.
-        """,
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
-    "song": {
-        "weight": 1,
-        "bazel_instructions": """
-            - Maak de bazel alsof het refrein van een liedje is.
-        """,
-        "image_instructions": RANDOM_IMAGE_FLAVOUR,
-    },
+    # "romantic": {
+    #     "weight": 1,
+    #     "bazel_instructions": """
+    #         - Maak de bazel alsof je iemand aan het versieren bent.
+    #     """,
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
+    # "song": {
+    #     "weight": 1,
+    #     "bazel_instructions": """
+    #         - Maak de bazel alsof het refrein van een liedje is.
+    #     """,
+    #     "image_instructions": RANDOM_IMAGE_FLAVOUR,
+    # },
     # "stan": {
     #     "weight": 1,
     #     "bazel_instructions": """
@@ -317,13 +317,13 @@ BAZEL_IMAGE_FLAVOURS = {
     #         - The story should have a buildup and a funny point to end it.
     #     """,
     # },
-    "depressing": {
-        "weight": 1,
-        "instructions": "- Generate a distopian, depressing, overly sad setting for this bazel.",
-    },
+    # "depressing": {
+    #     "weight": 1,
+    #     "instructions": "- Generate a distopian, depressing, overly sad setting for this bazel.",
+    # },
     "default": {
-        "weight": 10,
-        "instructions": " ",
+        "weight": 1,
+        "instructions": "- Generate a funny image for the given bazel.",
     },
     # "futuristic": {
     #     "weight": 1,
@@ -342,14 +342,14 @@ BAZEL_IMAGE_FLAVOURS = {
     #         - It should be an old pixelated video game.
     #     """,
     # },
-    "happy": {
-        "weight": 1,
-        "instructions": "- Generate an utopian, euphoric, overly happy setting for this bazel.",
-    },
-    "insides": {
-        "weight": 1,
-        "instructions": "- Generate a setting for this bazel as if you where on the inside of a human body.",
-    },
+    # "happy": {
+    #     "weight": 1,
+    #     "instructions": "- Generate an utopian, euphoric, overly happy setting for this bazel.",
+    # },
+    # "insides": {
+    #     "weight": 1,
+    #     "instructions": "- Generate a setting for this bazel as if you where on the inside of a human body.",
+    # },
     # "jim_carrey": {
     #     "weight": 1,
     #     "instructions": "- Create a scene with Jim Carrey in it for this bazel.",
@@ -362,14 +362,14 @@ BAZEL_IMAGE_FLAVOURS = {
     #     "weight": 1,
     #     "instructions": "- Create a medieval settign for the given bazel.",
     # },
-    "meme_template": {
-        "weight": 1,
-        "instructions": "- Create a dank meme of the given bazel.",
-    },
-    "modern_art": {
-        "weight": 1,
-        "instructions": "- Make a modern artwork of the bazel.",
-    },
+    # "meme_template": {
+    #     "weight": 1,
+    #     "instructions": "- Create a dank meme of the given bazel.",
+    # },
+    # "modern_art": {
+    #     "weight": 1,
+    #     "instructions": "- Make a modern artwork of the bazel.",
+    # },
     # "movie": {
     #     "weight": 1,
     #     "instructions": """
@@ -382,13 +382,13 @@ BAZEL_IMAGE_FLAVOURS = {
     #         - Create a natural disaster setting for this bazel.
     #     """,
     # },
-    "nightmare": {
-        "weight": 1,
-        "instructions": """
-            - This image should be nightmare fuel.
-            - Add scary, messed up, disturbing elements to the setting.
-        """,
-    },
+    # "nightmare": {
+    #     "weight": 1,
+    #     "instructions": """
+    #         - This image should be nightmare fuel.
+    #         - Add scary, messed up, disturbing elements to the setting.
+    #     """,
+    # },
     # "painting": {
     #     "weight": 1,
     #     "instructions": "- Make a painting of the bazel.",
@@ -410,17 +410,17 @@ BAZEL_IMAGE_FLAVOURS = {
     #     """,
     # },
     "sexual": {
-        "weight": 10,
+        "weight": 1,
         "instructions": """
             - Create a sexual setting for this bazel.
         """,
     },
-    "toddler": {
-        "weight": 1,
-        "instructions": """
-            - Create a childish drawing of this bazel.
-        """,
-    },
+    # "toddler": {
+    #     "weight": 1,
+    #     "instructions": """
+    #         - Create a childish drawing of this bazel.
+    #     """,
+    # },
     # "youtube_thumbnail": {
     #     "weight": 1,
     #     "instructions": """
