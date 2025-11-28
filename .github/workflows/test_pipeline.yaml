@@ -39,17 +39,14 @@ jobs:
       - run: pip install poetry
       - run: poetry install
 
-      # --- Docker Setup and Debugging ---
-
-      - name: Clean up old containers and volumes (Crucial for fresh DB state)
-        # down -v removes volumes, ensuring a clean start for the DB container
+      - name: Clean up old containers and volumes
         run: docker compose -f compose.test.yaml down -v --remove-orphans || true
 
       - name: Create docker containers
         run: docker compose -f compose.test.yaml up -d
 
+# TODO remove
       - name: Get Database Container Logs (Primary Debug Step)
-        # This step runs even if the previous step failed, capturing the error logs
         if: always()
         run: |
           echo "--- DATABASE CONTAINER LOGS (bazelbot-db-1) ---"
