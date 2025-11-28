@@ -1,3 +1,5 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches:
@@ -9,11 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up environment variables
         run: |
+          # The secrets are passed from the GitHub environment variables
           touch .env
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
           echo "CHANNEL_ID=313397112777867264" >> .env
+          # Note: The migration service in compose.test.yaml overrides this with the service name
           echo "DB_CONNECTION_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/bazelbot_db" >> .env
           echo "MAX_BAZEL_LENGTH=30" >> .env
           echo "MESSAGE_LIMIT=10000" >> .env
@@ -25,28 +30,47 @@ jobs:
           echo "BAZEL_IMAGE_HEIGHT=350" >> .env
           echo "BAZEL_FLAVOUR_VARIETY=20" >> .env
           echo "BAZEL_IMAGE_SAVE_PATH=data" >> .env
+
       - name: Install Python and Poetry
         uses: actions/setup-python@v3
         with:
           python-version: '3.12'
+
       - run: pip install poetry
       - run: poetry install
 
-      - name: Clean up old volumes and containers
+      # --- Docker Setup and Debugging ---
+
+      - name: Clean up old containers and volumes (Crucial for fresh DB state)
+        # down -v removes volumes, ensuring a clean start for the DB container
         run: docker compose -f compose.test.yaml down -v --remove-orphans || true
 
       - name: Create docker containers
         run: docker compose -f compose.test.yaml up -d
 
-      - name: Logs for Database
-        run: docker logs bazelbot-db-1
-
-      - name: Wait for Database
+      - name: Get Database Container Logs (Primary Debug Step)
+        # This step runs even if the previous step failed, capturing the error logs
+        if: always()
         run: |
-          for i in {1..10}; do
-            docker exec bazelbot-db-1 pg_isready -U postgres && break
+          echo "--- DATABASE CONTAINER LOGS (bazelbot-db-1) ---"
+          docker logs bazelbot-db-1
+          echo "------------------------------------------------"
+
+      - name: Wait for Database (Explicit Wait)
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          # Explicitly check for DB readiness using the same user defined in the compose file
+          for i in {1..15}; do
+            docker exec bazelbot-db-1 pg_isready -U postgres
+            if [ $? -eq 0 ]; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Attempt $i/15: DB not ready, waiting 5 seconds..."
             sleep 5
           done
+
+      # --- Code Quality Checks and Tests ---
 
       - name: Check running containers
         run: docker ps -a
