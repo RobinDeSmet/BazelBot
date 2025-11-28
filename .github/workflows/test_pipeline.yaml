@@ -32,8 +32,14 @@ jobs:
       - run: pip install poetry
       - run: poetry install
 
+      - name: Clean up old volumes and containers
+        run: docker compose -f compose.test.yaml down -v --remove-orphans || true
+
       - name: Create docker containers
         run: docker compose -f compose.test.yaml up -d
+
+      - name: Logs for Database
+        run: docker logs bazelbot-db-1
 
       - name: Wait for Database
         run: |
